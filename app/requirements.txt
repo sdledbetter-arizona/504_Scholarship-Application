@@ -1,0 +1,6 @@
+flask
+flask_sqlalchemy
+python-dateutil
+flask_login
+flask_mail
+flask-restful
