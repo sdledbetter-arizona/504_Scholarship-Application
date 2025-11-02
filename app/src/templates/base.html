@@ -18,7 +18,6 @@
 
   <style>
     :root {
-      --primary-color: #AB0520;
       --secondary-color: #1E5288;
       --caption-color: #495057;
       --ua-red: #AB0520;
@@ -32,6 +31,10 @@
     .text-primary {
       color: var(--ua-red) !important;
     }
+      
+    .text-secondary {
+      color: var(--ua-blue) !important;
+    }
 
     /* Navbar Styling */
     .navbar .nav-link {
@@ -39,7 +42,7 @@
     }
 
     .navbar .nav-link:hover {
-      color: var(--primary-color);
+      color: var(--ua-red);
     }
 
     form {
@@ -53,7 +56,7 @@
     }
 
     form .form-control:focus {
-      border-color: var(--primary-color);
+      border-color: var(--ua-red);
       box-shadow: 0 0 0 0.2rem rgba(139, 0, 21, 0.25);
     }
 
@@ -86,7 +89,7 @@
     }
 
     footer a:hover {
-      color: var(--primary-color);
+      color: var(--ua-red);
     }
   </style>
   {% block style %}{% endblock %}
