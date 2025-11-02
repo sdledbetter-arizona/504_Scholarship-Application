@@ -5,6 +5,7 @@ core = Blueprint('core', __name__)
 
 
 @core.route('/')
-@login_required
 def home():
-    return render_template("base.html")
+    if current_user.is_authenticated:
+        return render_template("home.html")
+    return render_template("auth/landing-page.html")

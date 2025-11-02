@@ -21,7 +21,7 @@ class User(db.Model):
 
 # ---------- APPLICANT ---------- #
 class Applicant(db.Model):
-    __tablename__ = "applicants"
+    __tablename__ = "applicant"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     student_id = db.Column(db.String(20))
@@ -48,7 +48,7 @@ class Donor(db.Model):
 
 # ---------- SCHOLARSHIP ---------- #
 class Scholarship(db.Model):
-    __tablename__ = "scholarships"
+    __tablename__ = "scholarship"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text)
@@ -71,7 +71,7 @@ class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     applicant_id = db.Column(db.Integer, db.ForeignKey('applicant.id'), nullable=False)
     scholarship_id = db.Column(db.Integer, db.ForeignKey('scholarship.id'), nullable=False)
-    submission_date = db.Column(db.DateTime, default=datetime.utcnow)
+    submission_date = db.Column(db.DateTime, default=datetime.datetime.now())
     status = db.Column(db.String(50), default='submitted')
     essay = db.Column(db.Text)
 
@@ -116,7 +116,7 @@ class Document(db.Model):
     file_type = db.Column(db.String(100), nullable=False)
     mime_type = db.Column(db.String(100), nullable=False)
     file_data = db.Column(db.LargeBinary, nullable=False)
-    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    upload_date = db.Column(db.DateTime, default=datetime.datetime.now())
 
     # Relationships
     applicant = db.relationship('Applicant', back_populates='documents')
