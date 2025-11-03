@@ -1,11 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 from src import db
+from flask_login import UserMixin
 
 
 # ---------- USER & ROLES ---------- #
-class User(db.Model):
-    __tablename__ = "users"
+class User(db.Model, UserMixin):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -23,7 +24,7 @@ class User(db.Model):
 class Applicant(db.Model):
     __tablename__ = "applicant"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     student_id = db.Column(db.String(20))
     netid = db.Column(db.String(20))
     major = db.Column(db.String(100))
@@ -37,9 +38,9 @@ class Applicant(db.Model):
 
 # ---------- DONOR ---------- #
 class Donor(db.Model):
-    __tablename__ = "donors"
+    __tablename__ = "donor"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     organization = db.Column(db.String(120))
     contact_info = db.Column(db.String(200))
 
@@ -55,8 +56,8 @@ class Scholarship(db.Model):
     amount = db.Column(db.Float)
     frequency = db.Column(db.String(50))  # e.g., annual, semester
     requirements = db.Column(db.Text)
-    donor_id = db.Column(db.Integer, db.ForeignKey("donors.id"), nullable=True)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    donor_id = db.Column(db.Integer, db.ForeignKey("donor.id"), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
 
     donor = db.relationship("Donor", back_populates="scholarships")
@@ -82,10 +83,10 @@ class Application(db.Model):
 
 # ---------- REVIEW ---------- #
 class Review(db.Model):
-    __tablename__ = "reviews"
+    __tablename__ = "review"
     id = db.Column(db.Integer, primary_key=True)
-    application_id = db.Column(db.Integer, db.ForeignKey("applications.id"), nullable=False)
-    reviewer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    application_id = db.Column(db.Integer, db.ForeignKey("application.id"), nullable=False)
+    reviewer_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     score = db.Column(db.Integer)
     comments = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
@@ -95,10 +96,10 @@ class Review(db.Model):
 
 # ---------- AWARD ---------- #
 class Award(db.Model):
-    __tablename__ = "awards"
+    __tablename__ = "award"
     id = db.Column(db.Integer, primary_key=True)
-    scholarship_id = db.Column(db.Integer, db.ForeignKey("scholarships.id"), nullable=False)
-    applicant_id = db.Column(db.Integer, db.ForeignKey("applicants.id"), nullable=False)
+    scholarship_id = db.Column(db.Integer, db.ForeignKey("scholarship.id"), nullable=False)
+    applicant_id = db.Column(db.Integer, db.ForeignKey("applicant.id"), nullable=False)
     amount_awarded = db.Column(db.Float)
     award_date = db.Column(db.DateTime, default=datetime.datetime.now())
 

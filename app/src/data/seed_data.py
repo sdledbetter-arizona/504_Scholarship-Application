@@ -1,5 +1,6 @@
+from flask import flash
 from src import db
-from app.src.data.models import User, Applicant, Donor, Scholarship, Application, Review, Award, Document
+from src.data.models import User, Applicant, Donor, Scholarship, Application, Review, Award, Document
 from werkzeug.security import generate_password_hash
 import datetime
 
@@ -10,8 +11,22 @@ def seed_data():
 
     # --- USERS ---
     admin = User(
-        name="Emily Johnson",
-        email="emily.johnson@arizona.edu",
+        name="Sheldon Ledbetter",
+        email="sdledbetter@arizona.edu",
+        password_hash=generate_password_hash("admin123"),
+        role="admin"
+    )
+
+    admin2 = User(
+        name="Angela Miller",
+        email="angelakmiller@arizona.edu",
+        password_hash=generate_password_hash("admin123"),
+        role="admin"
+    )
+
+    admin3 = User(
+        name="Rafael Estrada",
+        email="restrada2@arizona.edu",
         password_hash=generate_password_hash("admin123"),
         role="admin"
     )
@@ -44,7 +59,7 @@ def seed_data():
         role="applicant"
     )
 
-    db.session.add_all([admin, reviewer, donor_user, applicant_user1, applicant_user2])
+    db.session.add_all([admin,admin2, admin3, reviewer, donor_user, applicant_user1, applicant_user2])
     db.session.commit()
 
     # --- DONOR ---
@@ -174,7 +189,3 @@ def seed_data():
 
     db.session.add(award1)
     db.session.commit()
-
-    print("Database seeded successfully with binary document data!")
-
-
