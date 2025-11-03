@@ -54,7 +54,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-        if(not User.query.get(int(0))):
+        if(User.query.count() == 0):
             seed_data()
 
     return app
