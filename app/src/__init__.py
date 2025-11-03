@@ -2,15 +2,19 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 import os, secrets
+from flask_mail import Mail
 
 
 db = SQLAlchemy()
+mail = Mail()
 
 def create_app():
 
     from .views.core import core
     from .views.auth import auth
+    from .views.admin import admin
     from .data.models import User
+    from .data.seed_data import seed_data
 
     app = Flask(__name__)
 
@@ -25,6 +29,8 @@ def create_app():
     app.config['MAIL_PASSWORD'] = 'qxak ahkp lnke uagl'
     app.config['MAIL_DEFAULT_SENDER'] = 'sdledbetter0616@gmail.com'
 
+    mail.init_app(app)
+
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Please log in to access this application.'
@@ -37,6 +43,7 @@ def create_app():
 
     app.register_blueprint(core, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/auth')
+    app.register_blueprint(admin, url_prefix='/admin')
 
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -46,5 +53,8 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+
+        if(not User.query.get(int(0))):
+            seed_data()
 
     return app

@@ -17,6 +17,7 @@
   <title>{% block title %}{% endblock %}</title>
 
   <style>
+    /* Root Variables */
     :root {
       --secondary-color: #1E5288;
       --caption-color: #495057;
@@ -24,19 +25,20 @@
       --ua-blue: #0C234B;
     }
 
-    .bg-ua-red {
-      background-color: var(--ua-red);
-    }
-
+    /* Branding */
     .text-primary {
       color: var(--ua-red) !important;
     }
-      
+
     .text-secondary {
       color: var(--ua-blue) !important;
     }
 
-    /* Navbar Styling */
+    .bg-ua-red {
+      background-color: var(--ua-red);
+    }
+
+    /* Navbar */
     .navbar .nav-link {
       transition: color 0.3s ease;
     }
@@ -45,6 +47,7 @@
       color: var(--ua-red);
     }
 
+    /* Forms */
     form {
       background-color: #f8f9fa;
     }
@@ -60,6 +63,7 @@
       box-shadow: 0 0 0 0.2rem rgba(139, 0, 21, 0.25);
     }
 
+    /* Buttons */
     .btn-ua-red {
       background-color: var(--ua-red);
       color: white;
@@ -114,8 +118,13 @@
             <a class="nav-link text-primary fw-semibold" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-primary fw-semibold" href="#">About</a>
+            <a class="nav-link text-primary fw-semibold" href="/about">About</a>
           </li>
+           {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-primary fw-semibold" href="/auth/logout">Logout</a>
+          </li>
+          {% endif %}
         </ul>
       </div>
     </div>
@@ -127,6 +136,7 @@
     </div>
   </div>
 
+  <!-- Flash Alerts -->
   {% with flashes = get_flashed_messages(with_categories=true) %}
   {% if flashes %}
   {% for category, message in flashes %}
@@ -139,20 +149,49 @@
   {% endif %}
   {% endwith %}
 
+
+  <!-- Main Content -->
   <section class="section register d-flex flex-column align-items-center justify-content-center py-3">
     <div class="container">
       {% block content %}{% endblock %}
     </div>
   </section>
 
+
+  <!-- Footer -->
   <footer class="mt-auto py-4 bg-light text-center small text-muted border-top">
-    <div class="container">
-      Arizona Scholarship Matching System © 2025 The Arizona Board of Regents on behalf of
-      <a href="https://www.arizona.edu" target="_blank" class="fw-semibold text-decoration-underline text-muted">
-        The University of Arizona
-      </a>.
+    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        Arizona Scholarship Matching System © 2025 The Arizona Board of Regents on behalf of
+        <a href="https://www.arizona.edu" target="_blank" class="fw-semibold text-decoration-underline text-muted">
+          The University of Arizona
+        </a>.
+      </div>
+      <button type="button" class="btn btn-outline-danger btn-sm mt-2 mt-sm-0" data-bs-toggle="modal"
+        data-bs-target="#resetModal">
+        Reset Environment
+      </button>
     </div>
   </footer>
+
+  <!-- Reset Database Modal -->
+  <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="resetModalLabel">Reset Environment</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          This action will erase all data and re-seed the database. Are you sure you want to continue?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ua-blue" data-bs-dismiss="modal">Cancel</button>
+          <a href="/admin/reset-db" class="btn btn-danger">Yes, Reset</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
