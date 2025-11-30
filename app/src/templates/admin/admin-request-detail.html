@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Admin - Request Detail{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">Request Details</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Admin</a></li>
+        <li class="breadcrumb-item"><a href="/admin/requests">Requests</a></li>
+        <li class="breadcrumb-item active">{{request.id}}</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <div class=" d-flex justify-content-between">
+            <h4 class="card-title">Request #{{ request.id }} - {{ request.request_type }}</h4>
+            
+            {% if request.approval_status == 'Pending' %}
+            <div class="ml-auto">
+                <button class="btn btn-success" onclick="updateStatus('approve', '{{ request.id }}')"><i class="bi bi-check-circle"></i> Approve</button>
+                <button class="btn btn-danger" onclick="updateStatus('reject', '{{ request.id }}')"><i class="bi bi-x-circle"></i> Reject</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <h5>User Information</h5>
+                <p><strong>Name:</strong> {{ user_detail.first_name }} {{user_detail.last_name }}</p>
+                <p><strong>Email:</strong> {{ user_detail.email }}</p> 
+            </div>
+
+            <div class="col-md-4">
+                <h5>Request Information</h5>
+                <p><strong>Request Type:</strong> {{ request.request_type }}</p>
+                <p><strong>Status:</strong> {{ request.status }}</p>
+                <p><strong>Created At:</strong> {{ request.created_at }}</p>
+            </div>
+            <div class="col-md-4">
+                <h5>Approval Information</h5>
+                <p><strong>Status:</strong> {{ request.approval_status }}</p>
+                <p><strong>Approved By:</strong> {{ request.approved_by }}</p>
+                <p><strong>Approved At:</strong> {{ request.approved_at }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div>
+                <h5 class="mt-4">Request Details</h5>
+                <div class="row">
+                {% for key, value in request.details.items() %}
+                    <div class="col-md-4">
+                        <p><strong>{{ key }}:</strong> {{ value }}</p>
+                    </div>
+                {% endfor %}</div>
+            </div>
+        </div>
+        <a href="/admin/requests" class="btn btn-secondary mt-3">Back to Requests List</a>
+    </div>
+</div>
+
+<script>
+    function updateStatus(approval_status, request_id) {
+        fetch(`/api/requests/${request_id}/${approval_status}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Success:", data)
+            location.reload();
+        })
+        .catch(error => console.error("Error:", error));
+    }
+    </script>
+{% endblock %}

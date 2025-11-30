@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Request - Password Reset{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center ">
@@ -7,23 +7,15 @@
             <div class="card-body">
                 <form method="POST" class="row g-2 needs-validation">
                     <div class="pt-4 pb-2">
-                        <h3 class="card-title text-center pb-0 fs-4">Login to Your Account</h3>
-                        <p class="text-center small">Enter your username &amp; password to login</p>
+                        <h3 class="card-title text-center pb-0 fs-4">Submit for<br />Verification Code</h3>
+                        <p class="text-center small">Enter your email address</p>
                     </div>
                     <div class="form-group mb-3">
                         <label for="email">Email Address</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Enter email"
                             required="" />
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="pwd">Password</label>
-                        <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Enter password"
-                            required="" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <div>
-                        <p class="small mb-0 text-center"><a href="reset/request">Forgot your password?</a></p>
-                    </div>
+                    <button type="submit" class="btn btn-primary">Send Code</button>
                 </form>
             </div>
         </div>

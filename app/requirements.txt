@@ -1,6 +1,11 @@
 flask
 flask_sqlalchemy
-python-dateutil
 flask_login
 flask_mail
+requests
+flask_mail
 flask-restful
+tzdata
+pytest
+coverage
+python-dateutil
