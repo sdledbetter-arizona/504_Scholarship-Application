@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Student - Overview{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">Overview</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Student</li>
+    </ol>
+</nav>
+        <div class="row mt-4 justify-content-evenly">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">My Applications</h5>
+                        <p class="card-text">Total Pending: {{pending_count}}</p>
+                        <a href="/student/applications" class="btn btn-ua-red">View Applications</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Scholarship Directory</h5>
+                        <p class="card-text">Find your next scholarship</p>
+                        <a href="/student/scholarship-directory" class="btn btn-ua-red">View Directory</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+{% endblock %}

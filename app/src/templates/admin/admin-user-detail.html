@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+{% block title %}Admin - User Detail{% endblock %}
+{% block style %}
+<style>
+    .offcanvas-body {
+        padding: 20px;
+    }
+    .switch-list {
+        background-color: #f4f6f9;
+        padding: 5px;
+        border-radius: 10px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    
+    .form-check {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 20px 0px;
+            padding: 5px;
+        }
+
+    .form-check-label {
+            margin-right: auto;
+            margin-left: 10px;
+            font-weight: 500;
+    }
+    .offcanvas-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">{{user_detail.first_name}} {{user_detail.last_name}}</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Admin</a></li>
+        <li class="breadcrumb-item"><a href="/admin/users">Users</a></li>
+        <li class="breadcrumb-item active">{{user_detail.id}}</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        
+        <div class=" d-flex justify-content-between">
+            <h4 class="card-title">User Information</h4>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Actions
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#">Edit Account Information</a></li>
+                    <li><a class="dropdown-item" href="#">Edit Scholarship Profile</a></li>
+
+                    {% if user_detail.status == "Enabled" %}
+                    <li><a class="dropdown-item" onclick="UpdateStatus('{{ user_detail.id }}', '{{user_detail.status}}')">Disable Account</a></li>
+                    {% else %}
+                    <li><a class="dropdown-item" onclick="UpdateStatus('{{ user_detail.id }}', '{{user_detail.status}}')">Enable Account</a></li>
+                    {% endif %}
+
+                    <li><a class="dropdown-item" data-bs-toggle="offcanvas" data-bs-target="#userTypeoffcanvas" aria-controls="userTypeoffcanvas">Set User Type</a></li>
+                    <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#DeleteUserModal">Delete User</a></li>
+                </ul>
+              </div>
+        </div>
+    </div>
+    <div class="card-body">
+        
+      <div class="row">
+        <h5>Account Information</h5>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <p><strong>Name:</strong> {{user_detail.first_name}} {{user_detail.last_name}}</p>
+                <p><strong>Email:</strong> {{ user_detail.email }}</p> 
+                <p><strong>Status:</strong> {{ user_detail.status }}</p> 
+            </div>
+
+            <div class="col-md-4">
+                <p><strong>Username:</strong> {{ user_detail.username }}</p>
+                <p><strong>Net ID:</strong> {{ user_detail.net_id }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong>Phone Number:</strong> {{ user_detail.phone_num }}</p>
+                <p><strong>User Type:</strong> {{ user_detail.user_type }}</p>
+            </div>
+        </div>
+        <hr/>
+        <div class="row mt-4">
+          <h5>Student Profile </h5>
+          </div>
+          <div class="row">
+              <div class="col-md-4">
+                <p><strong>Preferred Pronoun:</strong> {{ student_profile.preferred_pronoun }}</p>
+                <p><strong>Student ID:</strong> {{ student_profile.student_id }}</p>
+                <p><strong>Ethnicity:</strong> {{ student_profile.ethnicity }}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Current Year:</strong> {{ student_profile.current_year }}</p>
+                <p><strong>Cumulative GPA:</strong> {{ student_profile.cumulative_gpa }}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Major:</strong> {{ student_profile.major }}</p>
+                <p><strong>Minor:</strong> {{ student_profile.minor }}</p>
+              </div>
+          </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p><strong>Personal Statement Essay:</strong> {{ student_profile.personal_statement_essay }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <p><strong>Work Experience:</strong> {{ student_profile.work_experience }}</p>
+            </div>
+        </div>
+            
+        
+        <a href="/admin/users" class="btn btn-secondary mt-3">Back to Users List</a>
+    </div>
+</div>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="userTypeoffcanvas" aria-labelledby="userTypeoffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasRightLabel">Set the user type for {{user_detail.first_name}} {{user_detail.last_name}} </h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div class="switch-list">
+            <div class="switch-list">
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="student">Student</label>
+                    <input class="form-check-input" name="options" type="checkbox" id="student" onclick="toggleSwitches(this);" value="Student">
+                </div>
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="scholarshipAdmin">Scholarship Admin</label>
+                    <input class="form-check-input" name="options" type="checkbox" id="scholarshipAdmin" onclick="toggleSwitches(this);" value="Scholarship Admin">
+                </div>
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="appReviewer">Application Reviewer</label>
+                    <input class="form-check-input"name="options" type="checkbox" id="appReviewer" onclick="toggleSwitches(this);" value="Application Reviewer">
+                </div>
+                <div class="form-check form-switch">
+                    <label class="form-check-label" for="reportAdmin">Scholarship Donor</label>
+                    <input class="form-check-input" name="options" type="checkbox" id="reportAdmin" onclick="toggleSwitches(this);" value="Scholarship Donor">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-footer">
+        <button type="button" class="btn btn-cancel btn-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="UpdateUserType('{{ user_detail.id }}')">Save</button>
+    </div>
+  </div>
+
+  <div class="modal fade" id="DeleteUserModal" tabindex="-1" aria-labelledby="DeleteUserModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark-subtle">
+            <i class="bi-info-circle-fill" style="font-size:25px;"></i>
+            <h1 class="modal-title fs-5" id="DeleteUserModalModalLabel"><strong>&nbsp;Delete User Account</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Once the account deletion process is initiated, it cannot be reversed. User will no longer have access to their account or associated features.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" onclick="DeleteAccount('{{user_detail.id}}')">Delete Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+
+
+    function DeleteAccount(user_id) {
+        fetch(`/api/users/${user_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Success:", data)
+            window.location.href = "/admin/users";
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function UpdateStatus(user_id, currentStatus) {
+
+        let newStatus = currentStatus == "Enabled" ? "Disabled" : "Enabled";
+
+        fetch(`/api/users/${user_id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Success:", data)
+            location.reload();
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    function toggleSwitches(selectedSwitch) {
+        const switches = document.querySelectorAll('input[name="options"]');
+        switches.forEach(sw => {
+            if (sw !== selectedSwitch) {
+                sw.checked = false;
+            }
+        });
+
+        // Ensure at least one switch is always selected
+        const anyChecked = Array.from(switches).some(sw => sw.checked);
+        if (!anyChecked) {
+            selectedSwitch.checked = true;
+        }
+    }
+
+    function UpdateUserType(user_id) {
+        const selectedType = document.querySelector('input[name="options"]:checked').value;
+
+        if (selectedType === '{{user_detail.user_type}}') {
+            location.reload();
+            return; 
+        }
+
+        fetch(`/api/users/${user_id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_type: selectedType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Success:", data)
+            location.reload();
+        })
+        .catch(error => console.error("Error:", error));
+    }
+
+    
+    window.onload = function() {
+        const switches = document.querySelectorAll('input[name="options"]');
+
+        switches.forEach(sw => {
+            if (sw.value === '{{user_detail.user_type}}') {
+                sw.checked = true;
+            }
+        });
+    };
+    </script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Find Scholarships{% endblock %}
+{% block content %}
+
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">{{scholarship.name}}</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="\">Student</a></li>
+        <li class="breadcrumb-item"><a href="/student/scholarship-directory">Scholarship Directory</a></li>
+        <li class="breadcrumb-item active">{{scholarship.id}}</li>
+    </ol>
+</nav>
+<!-- Scholarship Details Section -->
+<div class="row mb-4">
+    <div class="col-md-7">
+        <h4>
+            Scholarship Description
+        </h4>
+        <p>
+            {{scholarship.description | replace('\n', '<br>') | safe }}
+        </p>
+        {% if already_applied %}
+        <a href="/student/scholarship-directory/{{scholarship.id}}/apply" class="btn btn-ua-red w-25 mb-3 disabled text-white">Already Applied</a>
+        {% else %}
+        <a href="/student/scholarship-directory/{{scholarship.id}}/apply" class="btn btn-ua-red w-25 mb-3">Apply Now</a>
+        {% endif %}
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-4">
+        <!-- Eligibility Section -->
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center mb-1">
+                    <i class="bi-mortarboard fs-1 col-auto"></i>
+                    <div class="col-auto">Amount: <b>${{"{:,.0f}".format(scholarship.amount)}}</b></div>
+                </div>
+                {% if already_applied %}
+                <a href="/student/scholarship-directory/{{scholarship.id}}/apply" class="btn btn-ua-red w-100 mb-3 disabled text-white">Already Applied</a>
+                {% else %}
+                <a href="/student/scholarship-directory/{{scholarship.id}}/apply" class="btn btn-ua-red w-100 mb-3">Apply Now</a>
+                {% endif %}
+                <p>
+                    <i class="bi bi-calendar3"></i> Deadline: <b>{{scholarship.application_deadline}}</b>
+                </p>
+                <p>
+                    <i class="bi bi-stars"></i> Awards Available: <b>{{scholarship.scholarships_available}}</b>
+                </p>
+                <p class="mb-0">
+                    <b>You Meet the Following Requirements:</b><br />
+                </p>
+                <div class="row m-0 gap-2 column-gap-0 d-grid text-center" style="grid-template-columns: 1fr 1fr; padding-top:5px;">
+                    
+                    {% for req in eligible_reqs %}
+                    <div class="col">
+                        <div class="bg-ua-blue p-1 text-white" style=" border-radius: 10px; font-size:.7rem;">{{req}}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card-footer fs-4 row m-0">
+                <div class="col-6">Share:</div>
+                <div class="col-6 text-end">
+                    <a href="mailto:?subject={{scholarship.name}}&body=I found this scholarship and thought it could be a good fit for you.  Visit this link for details on this scholarship and others.%0d%0a {{scholarship.name}}%0d%0ahttp://localhost:8000/student/scholarship-directory/{{scholarship.id}}"><i class="bi bi-envelope"></i></a>&nbsp;
+                    <a href="javascript:void(0);" onclick="navigator.clipboard.writeText('http://localhost:8000/student/scholarship-directory/{{scholarship.id}}');"><i class="bi bi-link-45deg"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}

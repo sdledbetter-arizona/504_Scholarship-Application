@@ -23,6 +23,8 @@
       --caption-color: #495057;
       --ua-red: #AB0520;
       --ua-blue: #0C234B;
+      --ua-red-rgb: 171,5,32;
+      --ua-blue-rgb: 12,35,75;
     }
 
     /* Branding */
@@ -34,8 +36,20 @@
       color: var(--ua-blue) !important;
     }
 
+    .border-primary {
+      border-color: var(--ua-red) !important;
+    }
+
+    .border-secondary {
+      border-color: var(--ua-blue) !important;
+    }
+
     .bg-ua-red {
       background-color: var(--ua-red);
+    }
+
+    .bg-ua-blue {
+      background-color: var(--ua-blue);
     }
 
     /* Navbar */
@@ -65,24 +79,24 @@
 
     /* Buttons */
     .btn-ua-red {
-      background-color: var(--ua-red);
+      background-color: var(--ua-red) !important;
       color: white;
       border: none;
     }
 
     .btn-ua-red:hover {
-      background-color: #b90725;
+      background-color: #b90725 !important;
       color: white;
     }
 
     .btn-ua-blue {
-      background-color: var(--ua-blue);
+      background-color: var(--ua-blue) !important;
       color: white;
       border: none;
     }
 
     .btn-ua-blue:hover {
-      background-color: #122d61;
+      background-color: #122d61 !important;
       color: white;
     }
 
@@ -94,6 +108,74 @@
 
     footer a:hover {
       color: var(--ua-red);
+    }
+
+    a {
+      color: var(--ua-blue);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    a:hover {
+      color: #b90725;
+      text-decoration: none;
+    }
+
+
+    .breadcrumb {
+      font-size: 14px;
+      font-family: "Nunito", sans-serif;
+      color: #899bbd;
+      font-weight: 600;
+    }
+
+    .breadcrumb a {
+      color: #899bbd;
+      transition: 0.3s;
+    }
+
+    .breadcrumb a:hover {
+      color: #51678f;
+    }
+
+    .breadcrumb .breadcrumb-item::before {
+      color: #899bbd;
+    }
+
+    .breadcrumb .active {
+      color: #51678f;
+      font-weight: 600;
+    }
+
+    .dataTables_filter {
+      margin-bottom: 15px;
+    }
+
+    .dataTables_filter input {
+      background-color: white !important;
+    }
+
+    .dataTables_length select {
+      background-color: white !important;
+    }
+
+    #scholarship-table {
+      border-collapse: separate;
+      /* Ensures border-spacing works */
+      border-spacing: 0 15px;
+      /* Adds spacing between rows */
+    }
+
+    #scholarship-table tbody tr:hover {
+      --bs-bg-opacity: .1;
+    }
+
+    #scholarship-table tbody tr:nth-of-type(even) {
+      background-color: rgba(var(--ua-blue-rgb), var(--bs-bg-opacity));
+    }
+
+    #scholarship-table tbody tr:nth-of-type(odd) {
+      background-color: rgba(var(--ua-red-rgb), var(--bs-bg-opacity));
     }
   </style>
   {% block style %}{% endblock %}
@@ -114,16 +196,152 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
+          {% if user.is_authenticated %}
           <li class="nav-item">
             <a class="nav-link text-primary fw-semibold" href="/">Home</a>
           </li>
+          {% endif %}
+
+          {% if not user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-primary fw-semibold" href="/auth/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-primary fw-semibold" href="/auth/sign-up">Sign Up</a>
+          </li>
+          {% endif %}
+
+
           <li class="nav-item">
             <a class="nav-link text-primary fw-semibold" href="/about">About</a>
           </li>
-           {% if user.is_authenticated %}
+
+          {% if user.is_authenticated %}
+
+          {% if user.user_type == 'Student' %}
+          <!-- STUDENT -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-primary fw-semibold" href="#" id="studentMenu" role="button"
+              data-bs-toggle="dropdown">
+              <i class="bi-mortarboard"></i> Student
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="/student/applications">
+                  My Applications
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/student/scholarship-directory">
+                  Scholarship Directory
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+          {% if user.user_type == 'Scholarship Donor' %}
+          <!-- DONOR -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-primary fw-semibold" href="#" id="donorMenu" role="button"
+              data-bs-toggle="dropdown">
+              <i class="bi-currency-dollar"></i> Donor
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="/donor/applications">
+                  Applications
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/donor/scholarships">
+                  Scholarships
+                </a>
+              </li>
+            </ul>
+          </li>
+          {% endif %}
+
+          {% if user.user_type == 'Scholarship Admin' %}
+          <!-- ADMIN -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-primary fw-semibold" href="#" id="adminMenu" role="button"
+              data-bs-toggle="dropdown">
+              <i class="bi-person-fill-gear"></i> Admin
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="/admin/applications">
+                  Applications
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/requests">
+                  Requests
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/scholarships">
+                  Scholarships
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/users">
+                  User Management
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="/admin/audit-logs">
+                  Logs
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          {% endif %}
+
+
+          <li class="nav-item">
+            <a class="nav-link text-primary fw-semibold" href="/profile?tab=overview">Profile</a>
+          </li>
+
           <li class="nav-item">
             <a class="nav-link text-primary fw-semibold" href="/auth/logout">Logout</a>
           </li>
+
+          <!-- NOTIFICATIONS -->
+          <li class="nav-item dropdown">
+            <a class="nav-link" href="#" id="notifDropdown" data-bs-toggle="dropdown">
+              <i class="bi bi-bell text-primary position-relative">
+                {% set unread = current_user.notifications | selectattr("is_read", "equalto", False) | list %}
+                {% if unread|length > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{ unread|length }}
+                </span>
+                {% endif %}
+              </i>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+              {% if unread %}
+              {% for n in unread|sort(attribute='created_at', reverse=True) %}
+              <li>
+                <a class="dropdown-item" href="{{ n.url or '#' }}">
+                  <strong>{{ n.title }}</strong><br>
+                  <small class="text-muted">{{ n.created_at.strftime("%b %d, %I:%M %p") }}</small>
+                </a>
+              </li>
+              {% endfor %}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-center" href="{{ url_for('views.notifications_page') }}">View All</a></li>
+              {% else %}
+              <li class="dropdown-item text-muted">No notifications</li>
+              {% endif %}
+            </ul>
+          </li>
+
           {% endif %}
         </ul>
       </div>
@@ -160,38 +378,16 @@
 
   <!-- Footer -->
   <footer class="mt-auto py-4 bg-light text-center small text-muted border-top">
-    <div class="container d-flex justify-content-between align-items-center flex-wrap">
+    <div class="container  justify-content-between align-items-center ">
       <div>
         Arizona Scholarship Matching System © 2025 The Arizona Board of Regents on behalf of
         <a href="https://www.arizona.edu" target="_blank" class="fw-semibold text-decoration-underline text-muted">
           The University of Arizona
         </a>.
       </div>
-      <button type="button" class="btn btn-outline-danger btn-sm mt-2 mt-sm-0" data-bs-toggle="modal"
-        data-bs-target="#resetModal">
-        Reset Environment
-      </button>
     </div>
   </footer>
 
-  <!-- Reset Database Modal -->
-  <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-danger text-white">
-          <h5 class="modal-title" id="resetModalLabel">Reset Environment</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          This action will erase all data and re-seed the database. Are you sure you want to continue?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-ua-blue" data-bs-dismiss="modal">Cancel</button>
-          <a href="/admin/reset-db" class="btn btn-danger">Yes, Reset</a>
-        </div>
-      </div>
-    </div>
-  </div>
 </body>
 
 </html>

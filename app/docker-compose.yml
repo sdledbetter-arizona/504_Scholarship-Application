@@ -1,0 +1,23 @@
+services:
+  sqlite_data:
+    image: alpine  # Lightweight container to hold data
+    volumes:
+      - sqlite_data:/data  # Named volume to persist databases
+    command: tail -f /dev/null  # Keeps the container running indefinitely
+
+  flask_app:
+    build: .
+    ports:
+      - "5000:5000"
+    depends_on:
+      - sqlite_data
+    volumes:
+      - sqlite_data:/app/src/data  # Mounts the database volume into the app
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_RUN_HOST=0.0.0.0
+      - FLASK_ENV=production
+    restart: always
+
+volumes:
+  sqlite_data:  # Define the persistent volume

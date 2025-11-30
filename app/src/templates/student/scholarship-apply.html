@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block title %}Apply{% endblock %}
+
+{% block style %}
+<style>
+    label {
+        font-weight: 600;
+        color: rgba(1, 41, 112, 0.6);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">{{scholarship.name}}</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="\">Student</a></li>
+        <li class="breadcrumb-item"><a href="/student/scholarship-directory">Scholarship Directory</a></li>
+        <li class="breadcrumb-item"><a href="/student/scholarship-directory/{{scholarship.id}}">{{scholarship.id}}</a>
+        </li>
+        <li class="breadcrumb-item active">Apply</li>
+    </ol>
+</nav>
+<div class="row mb-4">
+    <div class="col-md-7 h-auto">
+        <h4 class="mb-3">Fill in the Items Below:</h4>
+
+        <div class="row mb-4 justify-content-evenly">
+            <button class="btn btn-primary col-5" onclick="autofillProfileInfo()">Auto-fill Profile Info</button>
+            <button class="btn btn-secondary col-5" onclick="clearForm()">Clear All Fields</button>
+        </div>
+
+        <form method="post" onsubmit="return validateMajorOrMinor()" id="applicationForm">
+
+            <div class="row">
+                <!-- Preferred Pronoun -->
+                <div class="mb-3 col-6">
+                    <label for="preferredPronoun" class="form-label">Preferred Pronoun</label>
+                    <input type="text" class="form-control" id="preferredPronoun" name="preferred_pronoun"
+                        placeholder="E.g., She/Her, He/Him, They/Them" required>
+                </div>
+
+                <!-- Student ID -->
+                <div class="mb-3 col-6">
+                    <label for="studentId" class="form-label">Student ID</label>
+                    <input type="text" class="form-control" id="studentId" name="student_id"
+                        placeholder="Enter Your Student ID" required>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <!-- Major -->
+                <div class="mb-3 col-6">
+                    <label for="major" class="form-label">Major</label>
+                    <input type="text" class="form-control" id="major" name="major" placeholder="Enter Your Major">
+                </div>
+
+                <!-- Minor -->
+                <div class="mb-3 col-6">
+                    <label for="minor" class="form-label">Minor</label>
+                    <input type="text" class="form-control" id="minor" name="minor" placeholder="Enter Your Minor">
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- GPA -->
+                <div class="mb-3 col-6">
+                    <label for="cumulativeGpa" class="form-label">Cumulative GPA</label>
+                    <input type="number" step="0.01" class="form-control" id="cumulativeGpa" name="cumulative_gpa"
+                        placeholder="Enter Your GPA" required>
+                </div>
+
+                <!-- Current Year -->
+                <div class="mb-3 col-6">
+                    <label for="currentYear" class="form-label">Current Year</label>
+                    <select class="form-select" id="currentYear" name="current_year" required>
+                        <option value="" disabled selected>Select your current year</option>
+                        <option value="Freshman">Freshman</option>
+                        <option value="Sophomore">Sophomore</option>
+                        <option value="Junior">Junior</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Graduate">Graduate</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Ethnicity -->
+            <div class="mb-3">
+                <label for="ethnicity" class="form-label">Ethnicity</label>
+                <select class="form-select" id="ethnicity" name="ethnicity" required>
+                    <option value="" disabled selected>Select your ethnicity</option>
+                    <option value="Caucasian">Caucasian</option>
+                    <option value="Hispanic">Hispanic</option>
+                    <option value="Black">Black</option>
+                    <option value="European">European</option>
+                    <option value="Asian">Asian</option>
+                    <option value="Indian">Indian</option>
+                    <option value="American Indian">American Indian</option>
+                    <option value="Arabic/Middle Eastern">Arabic/Middle Eastern</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Personal Statement Essay -->
+            <div class="mb-3">
+                <label for="personalStatement" class="form-label">Personal Statement Essay</label>
+                <textarea class="form-control" id="personalStatement" name="personal_statement_essay" rows="5"
+                    placeholder="Write your essay here"></textarea>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="mb-3">
+                <label for="workExperience" class="form-label">Work Experience</label>
+                <textarea class="form-control" id="workExperience" name="work_experience" rows="3"
+                    placeholder="Describe your work experience"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+        </form>
+
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-4">
+
+        <!-- Eligibility Section -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center mb-1">
+                    <i class="bi-mortarboard fs-1 col-auto"></i>
+                    <div class="col-auto">Amount: <b>${{"{:,.0f}".format(scholarship.amount)}}</b></div>
+                </div>
+                <p>
+                    <i class="bi bi-calendar3"></i> Deadline: <b>{{scholarship.application_deadline}}</b>
+                </p>
+                <p>
+                    <i class="bi bi-stars"></i> Awards Available: <b>{{scholarship.scholarships_available}}</b>
+                </p>
+                <p class="mb-0">
+                    <b>You Meet the Following Requirements:</b><br />
+                </p>
+                <div class="row m-0 gap-2 column-gap-0 d-grid text-center"
+                    style="grid-template-columns: 1fr 1fr; padding-top:5px;">
+                    <div class="col">
+                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">GPA</div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">Major</div>
+                    </div>
+                    <div class="col">
+                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">Minor</div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer fs-4 row m-0">
+                <div class="col-6">Share:</div>
+                <div class="col-6 text-end">
+                    <a
+                        href="mailto:?subject={{scholarship.name}}&body=I found this scholarship and thought it could be a good fit for you.  Visit this link for details on this scholarship and others.%0d%0a {{scholarship.name}}%0d%0ahttp://localhost:8000/student/scholarship-directory/{{scholarship.id}}"><i
+                            class="bi bi-envelope"></i></a>&nbsp;
+                    <a href="javascript:void(0);"
+                        onclick="navigator.clipboard.writeText('http://localhost:8000/student/scholarship-directory/{{scholarship.id}}');"><i
+                            class="bi bi-link-45deg"></i></a>
+                </div>
+            </div>
+
+        </div>
+        <div class="card">
+            <h4 class="card-header">
+                Scholarship Description
+            </h4>
+
+            <div class="card-body">
+                <p>
+                    {{scholarship.description | replace('\n', '<br>') | safe }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    function validateMajorOrMinor() {
+            const major = document.getElementById("major").value.trim();
+            const minor = document.getElementById("minor").value.trim();
+
+            if (major === "" && minor === "") {
+                alert("Please fill in either the Major or Minor field.");
+                return false; // Prevents form submission
+            }
+            return true; // Allows form submission
+        }
+
+
+    async function autofillProfileInfo() {
+
+        try {
+            const response = await fetch('/api/users/{{current_user.id}}/profile');
+            if (!response.ok) {
+                throw new Error('Failed to fetch student profile');
+            }
+            const profile = await response.json();
+
+            // Loop through the profile data and populate the form fields
+            for (const field in profile) {
+                const formField = document.querySelector(`[name="${field}"]`);
+                if (formField) {
+                    if (formField.type === "checkbox" || formField.type === "radio") {
+                        formField.checked = formField.value === profile[field].toString();
+                    } else {
+                        formField.value = profile[field] ?? ''; // Handle null/undefined values
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error);
+            alert('Could not auto-fill profile information.');
+        }
+
+    }
+
+    function clearForm() {
+    // Get the form element by its ID
+    const form = document.getElementById("applicationForm");
+
+    if (form) {
+        // Loop through each form field
+        form.reset(); // This resets all the fields to their initial values
+    } else {
+        console.error(`Form with ID "${formId}" not found.`);
+    }
+}
+
+
+</script>
+
+{% endblock %}
