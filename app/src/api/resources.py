@@ -116,18 +116,6 @@ class TicketRequestResource(Resource):
         if ticket.status != "Open":
             return {"message": "Ticekt request is already closed"}, 400
 
-        # Convenience: keep old values for audit of status changes
-        def audit_ticket_status_change(action_label: str):
-            """Log key status/approval fields as a grouped action."""
-            log_change(
-                user_id=current_user_id_or_none(),
-                action=action_label,
-                entity=ticket,
-                field_name="status",
-                old_value=ticket.status,
-                new_value=ticket.status,
-            )
-
         if approval_status == "reject":
 
             if ticket.request_type == "Delete Account":
@@ -1339,4 +1327,5 @@ class DocumentResource(Resource):
                 "file_type": document.file_type,
                 "upload_date": document.upload_date.isoformat(),
                 "mime_type": document.mime_type,
+
             } for document in documents], 200
