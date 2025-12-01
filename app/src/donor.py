@@ -37,6 +37,8 @@ def scholarships():
         scholarships_available = request.form.get('scholarships_available')
         eligible_majors = request.form.get('eligible_majors')
         eligible_minors = request.form.get('eligible_minors')
+        required_year = request.form.get('required_year')
+        required_ethnicity = request.form.get('required_ethnicity')
         required_gpa = float(request.form.get('required_gpa')) if request.form.get('required_gpa') else None
         application_deadline = datetime.datetime.strptime(request.form.get('application_deadline'), "%Y-%m-%d").date().isoformat()
         other_requirements = request.form.get('other_requirements')
@@ -55,12 +57,14 @@ def scholarships():
                     "eligible_majors": eligible_majors,
                     "eligible_minors": eligible_minors,
                     "required_gpa": required_gpa,
+                    "required_year": required_year,
+                    "required_ethnicity": required_ethnicity,
                     "application_deadline": application_deadline,
                     "other_requirements": other_requirements
                 }
             }
             
-        requests.post(api_request_url, json=form_data)
+        requests.post(api_request_url, json=form_data, cookies=request.cookies)
         flash("Your create scholarship request has been successfully submitted ",category="success")
 
     return render_template("donor/donor-scholarships.html", user=current_user, scholarships = scholarships_data)
@@ -111,7 +115,7 @@ def applications():
                 }
             }
             
-        requests.post(api_request_url, json=form_data)
+        requests.post(api_request_url, json=form_data, cookies=request.cookies)
         flash("Your create scholarship request has been successfully submitted ",category="success")
 
 

@@ -222,7 +222,7 @@ def sign_up():
             }
             
             api_url = "http://localhost:5000/api/requests"
-            requests.post(api_url, json=form_data)
+            requests.post(api_url, json=form_data, cookies=request.cookies)
             
             flash("Account creation request has been submitted. You will receive an email once completed.", category="warning")
             return redirect(url_for(login_view))

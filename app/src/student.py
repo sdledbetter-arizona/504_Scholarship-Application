@@ -10,43 +10,6 @@ from .utils import student_required, check_not_applied
 
 
 student = Blueprint('student', __name__)
-
-def calculate_eligible_score(scholarship_id, user_id):
-
-    scholarship_requirements = Scholarship.query.filter_by(id=scholarship_id).first().requirements
-    user_profile = StudentProfile.query.filter_by(user_id=user_id).first().results
-
-    scholarship_requirements = {key: value for key, value in scholarship_requirements.items() if value is not None}
-    user_profile = {key: value for key, value in user_profile.items() if value is not None}
-
-    total_requirements = len(scholarship_requirements)
-
-    matched_requirements = 0
-
-    for key, value in scholarship_requirements.items():
-        if key == "gpa" and user_profile.get(key, 0) >= value:
-            matched_requirements += 1
-        elif key in ["major", "minor"]:
-            profile_value = user_profile.get(key)
-
-            if profile_value in value:
-                matched_requirements += 1
-
-        elif key not in ["gpa", "major", "minor"] and user_profile.get(key) == value:
-            matched_requirements += 1
-    
-    missed_requirements = total_requirements - matched_requirements
-    
-    if missed_requirements == 0:
-        return 4
-    elif missed_requirements == 1:
-        return 3
-    elif missed_requirements == 2:
-        return 2
-    elif missed_requirements == 3:
-        return 1
-    else:
-        return 0
     
 def find_eligible_requirements(scholarship_id, user_id):
 
@@ -151,6 +114,7 @@ def scholarship_detail(id):
 def scholarship_apply(id):
 
     scholarship = Scholarship.query.filter_by(id = id).first()
+    eligible_reqs = find_eligible_requirements(id, current_user.id)
 
     if request.method == "POST":
         preferred_pronoun = request.form.get('preferred_pronoun')
@@ -179,11 +143,23 @@ def scholarship_apply(id):
                 
         }
             
-        requests.post("http://localhost:5000/api/applications", json=form_data)
+        app_response = requests.post("http://localhost:5000/api/applications", json=form_data, cookies=request.cookies)
+        
+        application_id = app_response.json().get("id")
+
+        uploaded_file = request.files.get("document")
+        document_type = request.form.get("document_type")
+
+        if uploaded_file and uploaded_file.filename:
+            files = {"document": (uploaded_file.filename, uploaded_file, uploaded_file.mimetype)}
+            data = {"application_id": application_id, "document_type": document_type}
+
+            requests.post("http://localhost:5000/api/documents", files=files, data=data, cookies=request.cookies)
+
         flash("Your scholarship application has been successfully submitted",category="success")
         msg = Message("SAS - New Application Submitted", recipients=[scholarship.donor_email])
         msg.body = f"Student {current_user.first_name} {current_user.last_name} has applied for the scholarship '{scholarship.name}'"
         mail.send(msg)
         return redirect(url_for('student.applications'))
 
-    return render_template("student/scholarship-apply.html", user=current_user, scholarship=scholarship)
+    return render_template("student/scholarship-apply.html", user=current_user, scholarship=scholarship, eligible_reqs = eligible_reqs)

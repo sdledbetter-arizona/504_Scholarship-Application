@@ -1,10 +1,11 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for, abort
+from flask import Blueprint, flash, redirect, render_template, request, url_for, abort, send_file
 from flask_login import login_required, current_user
 import requests
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import StudentProfile, User, SecurityQuestion, TicketRequest, Scholarship,Application, AuditLog, Notification
+from .models import StudentProfile, User, SecurityQuestion, TicketRequest, Scholarship,Application, AuditLog, Notification, Document
 from . import db
 from .utils import apply_changes_with_audit
+from io import BytesIO
 
 
 views = Blueprint('views', __name__)
@@ -45,6 +46,11 @@ def home():
         pending_count = (Application.query.filter_by(user_id=current_user.id, status="Pending Decision").count())
 
         return render_template("student/student-overview.html", user=current_user, pending_count = pending_count)
+
+@views.route('/documents/<int:id>/download')
+def download_document(id):
+    document = Document.query.get_or_404(id)
+    return send_file(BytesIO(document.file_data), as_attachment=True, download_name=document.file_name, mimetype=document.mime_type or "application/octet-stream")
 
 
 @views.route('/about')
@@ -131,14 +137,14 @@ def profile():
                     }
                 }
                 
-                requests.post(api_request_url, json=form_data)
+                requests.post(api_request_url, json=form_data, cookies=request.cookies)
 
                 form_data = {
                     "status": "Disabled"
                 }
                 
                 api_url = f"http://localhost:5000/api/users/{current_user.id}"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
                 flash("You account has been prepped for deletion. Hope to see you again!",category="warning")
                 return redirect(url_for('auth.logout'))
@@ -173,7 +179,7 @@ def profile():
                     }
                 }
                 
-            requests.post(api_request_url, json=form_data)
+            requests.post(api_request_url, json=form_data, cookies=request.cookies)
             flash("Your change role request has been sucessfully submitted.", category="success")
             
         else:
@@ -204,7 +210,7 @@ def profile():
                     }
                 }
                 
-            requests.post(api_request_url, json=form_data)
+            requests.post(api_request_url, json=form_data, cookies=request.cookies)
             flash("Your edit profile request has been successfully submitted ",category="success")
 
     return render_template("views/profile.html", user=current_user, sec_quests = sec_quests, profile = user_profile)

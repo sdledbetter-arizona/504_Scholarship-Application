@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_login import current_user
 from flask_restful import Resource
 import requests, json
-
+from werkzeug.utils import secure_filename
 from src.models import *
 from .. import mail
 from flask_mail import Message
@@ -135,7 +135,7 @@ class TicketRequestResource(Resource):
                     "status": "Enabled"
                 }
                 api_url = f"http://localhost:5000/api/users/{ticket.user_id}"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             old_status = ticket.status
             old_approval_status = ticket.approval_status
@@ -214,7 +214,7 @@ class TicketRequestResource(Resource):
                 form_data.pop("security_questions", None)
 
                 api_url = "http://localhost:5000/api/users"
-                response = requests.post(api_url, json=form_data)
+                response = requests.post(api_url, json=form_data, cookies=request.cookies)
 
                 new_user = response.json().get("user_id")
 
@@ -224,56 +224,56 @@ class TicketRequestResource(Resource):
                     question["user_id"] = new_user
 
                 api_url = f"http://localhost:5000/api/users/{new_user}/security_questions"
-                requests.post(api_url, json=form_data)
+                requests.post(api_url, json=form_data, cookies=request.cookies)
 
                 api_url = f"http://localhost:5000/api/users/{new_user}/profile"
-                requests.post(api_url, json=None)
+                requests.post(api_url, json=None, cookies=request.cookies)
 
             elif ticket.request_type == "Delete Account":
 
                 api_url = f"http://localhost:5000/api/users/{ticket.user_id}"
-                requests.delete(api_url, json=None)
+                requests.delete(api_url, json=None, cookies=request.cookies)
 
             elif ticket.request_type == "Change Role":
 
                 api_url = f"http://localhost:5000/api/users/{ticket.user_id}"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Edit Profile":
 
                 api_url = f"http://localhost:5000/api/users/{ticket.user_id}/profile"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Create Scholarship":
 
                 form_data["donor_id"] = ticket.user_id
 
                 api_url = "http://localhost:5000/api/scholarships"
-                requests.post(api_url, json=form_data)
+                requests.post(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Update Scholarship":
                 api_url = f"http://localhost:5000/api/scholarships/{form_data['scholarship_id']}"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Delete Scholarship":
                 api_url = f"http://localhost:5000/api/scholarships/{form_data['scholarship_id']}"
-                requests.delete(api_url, json=None)
+                requests.delete(api_url, json=None, cookies=request.cookies)
 
             elif ticket.request_type == "Update Application":
                 api_url = f"http://localhost:5000/api/applications/{form_data['application_id']}"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Delete Application":
                 api_url = f"http://localhost:5000/api/applications/{form_data['application_id']}"
-                requests.delete(api_url, json=None)
+                requests.delete(api_url, json=None, cookies=request.cookies)
 
             elif ticket.request_type == "Update Application Score":
                 api_url = f"http://localhost:5000/api/applications/{form_data['application_id']}/score"
-                requests.put(api_url, json=form_data)
+                requests.put(api_url, json=form_data, cookies=request.cookies)
 
             elif ticket.request_type == "Reset Application Score":
                 api_url = f"http://localhost:5000/api/applications/{form_data['application_id']}/score/reset"
-                requests.put(api_url, json=None)
+                requests.put(api_url, json=None, cookies=request.cookies)
 
             old_status = ticket.status
             old_approval_status = ticket.approval_status
@@ -661,6 +661,8 @@ class ScholarshipResource(Resource):
                 "eligible_majors": scholarship.eligible_majors,
                 "eligible_minors": scholarship.eligible_minors,
                 "required_gpa": str(scholarship.required_gpa),
+                "required_year": scholarship.required_year,
+                "required_ethnicity": scholarship.required_ethnicity,
                 "application_deadline": scholarship.application_deadline.isoformat()
                 if scholarship.application_deadline
                 else None,
@@ -694,6 +696,8 @@ class ScholarshipResource(Resource):
                 "eligible_majors": s.eligible_majors,
                 "eligible_minors": s.eligible_minors,
                 "required_gpa": str(s.required_gpa),
+                "required_year": s.required_year,
+                "required_ethnicity": s.required_ethnicity,
                 "application_deadline": s.application_deadline.isoformat()
                 if s.application_deadline
                 else None,
@@ -714,6 +718,8 @@ class ScholarshipResource(Resource):
             eligible_majors=json.loads(data["eligible_majors"]) if data["eligible_majors"] else [],
             eligible_minors=json.loads(data["eligible_minors"]) if data["eligible_minors"] else [],
             required_gpa=data["required_gpa"],
+            required_year=data["required_year"],
+            required_ethnicity=data["required_ethnicity"],
             application_deadline=datetime.datetime.fromisoformat(data["application_deadline"]),
             other_requirements=data["other_requirements"],
         )
@@ -732,6 +738,8 @@ class ScholarshipResource(Resource):
             "eligible_majors": "eligible_majors",
             "eligible_minors": "eligible_minors",
             "required_gpa": "required_gpa",
+            "required_year":"required_year",
+            "required_ethnicity":"required_ethnicity",
             "application_deadline": "application_deadline",
             "other_requirements": "other_requirements",
         }
@@ -961,7 +969,7 @@ class ApplicationResource(Resource):
         )
         mail.send(msg)
 
-        return {"message": "Application created"}, 201
+        return {"message": "Application created", "id":new_application.id}, 201
 
     def put(self, app_id):
         application = Application.query.get(app_id)
@@ -1204,7 +1212,7 @@ class NotificationResource(Resource):
         db.session.commit()
         return {"message": "Notification created"}, 201
 
-    def put(self, id):
+    def put(self, id=None):
         notification = Notification.query.get(id)
         if not notification:
             return {"message": self.NNF_error}, 404
@@ -1235,3 +1243,100 @@ class NotificationResource(Resource):
 
         db.session.commit()
         return {"message": "Notification Updated"}, 200
+
+
+
+class DocumentResource(Resource):
+
+    
+    DNF_error = "Document not found"
+
+    def post(self):
+        uploaded_file = request.files.get("document")
+        application_id = request.form.get("application_id")
+        document_type = request.form.get("document_type")
+
+        if not application_id:
+            return {"error": "application_id is required"}, 400
+
+        if not uploaded_file or uploaded_file.filename == "":
+            return {"error": "No file uploaded"}, 400
+
+        filename = secure_filename(uploaded_file.filename)
+        file_bytes = uploaded_file.read()
+
+        document = Document(
+            application_id=application_id,
+            file_name=filename,
+            file_type=document_type,
+            file_data=file_bytes,
+            mime_type=uploaded_file.mimetype,
+        )
+
+        db.session.add(document)
+        db.session.flush()  # so document.id is populated
+
+        # -------- AUDIT LOGGING (field_map style) -------- #
+        field_map = {
+            "application_id": "application_id",
+            "file_name": "file_name",
+            "file_type": "file_type",
+            "mime_type": "mime_type"
+        }
+
+        for _, model_attr in field_map.items():
+            new_val = getattr(document, model_attr)
+            log_change(
+                user_id=current_user_id_or_none(),
+                action="Uploaded Document",
+                entity=document,
+                field_name=model_attr,
+                old_value=None,
+                new_value=new_val,
+            )
+
+        db.session.commit()
+
+        return {"message": "Document uploaded successfully", "document_id": document.id}, 201
+    
+    def delete(self, id=None):
+        document = Document.query.get(id)
+        if not document:
+            return {"message": self.NNF_error}, 404
+
+        log_change(
+            user_id=current_user_id_or_none(),
+            action="Deleted Document",
+            entity=document,
+            field_name=None,
+            old_value=None,
+            new_value=None,
+        )
+
+        db.session.delete(document)
+        db.session.commit()
+        return {"message": "Document deleted"}, 200
+    
+    def get(self, id=None):
+        if id:
+            document = Document.query.get(id)
+            if not document:
+                return {"message": self.DNF_error}, 404
+            return {
+                "id": document.id,
+                "application_id": document.application_id,
+                "file_name": document.file_name,
+                "file_type": document.file_type,
+                "upload_date": document.upload_date.isoformat(),
+                "mime_type": document.mime_type,
+            }, 200
+        else:
+            documents = Document.query.all()
+            return [{
+                "id": document.id,
+                "application_id": document.application_id,
+                "file_name": document.file_name,
+                "file_type": document.file_type,
+                "upload_date": document.upload_date.isoformat(),
+                "mime_type": document.mime_type,
+            } for document in documents], 200

@@ -110,6 +110,43 @@
               value="{{scholarship.required_gpa or ''}}" step="0.01" min="0">
           </div>
           <div class="mb-3">
+            <label for="required_year{{scholarship.id}}" class="form-label">Required Year</label>
+            <select name="required_year" class="form-control" id="required_year{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_year=="None" %}selected{% endif %}>None</option>
+              <option value="Freshman" {% if scholarship.required_year=="Freshman" %}selected{% endif %}>Freshman
+              </option>
+              <option value="Sophomore" {% if scholarship.required_year=="Sophomore" %}selected{% endif %}>Sophomore
+              </option>
+              <option value="Junior" {% if scholarship.required_year=="Junior" %}selected{% endif %}>Junior</option>
+              <option value="Senior" {% if scholarship.required_year=="Senior" %}selected{% endif %}>Senior</option>
+              <option value="Graduate" {% if scholarship.required_year=="Graduate" %}selected{% endif %}>Graduate
+              </option>
+            </select>
+          </div>
+
+          <!-- Required Ethnicity -->
+          <div class="mb-3">
+            <label for="required_ethnicity{{scholarship.id}}" class="form-label">Required Ethnicity</label>
+            <select name="required_ethnicity" class="form-control" id="required_ethnicity{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_ethnicity=="None" %}selected{% endif %}>None</option>
+              <option value="Caucasian" {% if scholarship.required_ethnicity=="Caucasian" %}selected{% endif %}>
+                Caucasian</option>
+              <option value="Hispanic" {% if scholarship.required_ethnicity=="Hispanic" %}selected{% endif %}>Hispanic
+              </option>
+              <option value="Black" {% if scholarship.required_ethnicity=="Black" %}selected{% endif %}>Black</option>
+              <option value="European" {% if scholarship.required_ethnicity=="European" %}selected{% endif %}>European
+              </option>
+              <option value="Asian" {% if scholarship.required_ethnicity=="Asian" %}selected{% endif %}>Asian</option>
+              <option value="Indian" {% if scholarship.required_ethnicity=="Indian" %}selected{% endif %}>Indian
+              </option>
+              <option value="American Indian" {% if scholarship.required_ethnicity=="American Indian" %}selected{% endif
+                %}>American Indian</option>
+              <option value="Arabic/Middle Eastern" {% if scholarship.required_ethnicity=="Arabic/Middle Eastern"
+                %}selected{% endif %}>Arabic/Middle Eastern</option>
+              <option value="Other" {% if scholarship.required_ethnicity=="Other" %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
             <label for="applicationDeadline" class="form-label">Application Deadline</label>
             <input type="date" class="form-control" id="applicationDeadline"
               value="{{scholarship.application_deadline}}" name="application_deadline" required>
@@ -195,7 +232,6 @@
       }
     }
 
-    console.log(JSON.stringify(details))
 
     fetch(`/api/scholarships/` + scholarship_id, {
       method: 'PUT',

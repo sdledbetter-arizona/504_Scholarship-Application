@@ -35,6 +35,7 @@ class User(db.Model, UserMixin):
     approvals = db.relationship('TicketRequest', foreign_keys='TicketRequest.approved_by', backref='approver', lazy=True)
     notifications = db.relationship("Notification",backref="user", cascade="all, delete")
 
+
     @hybrid_property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
@@ -109,12 +110,9 @@ class Application(db.Model):
     personal_statement_essay = db.Column(db.Text, nullable=True)
     work_experience = db.Column(db.Text, nullable=True)
     date_submitted = db.Column(db.Date, nullable=False, default=datetime.datetime.now)
-
-    scores = db.relationship(
-            'ApplicationScore',
-            back_populates='application',
-            cascade='all, delete'
-        )
+    
+    documents = db.relationship("Document", back_populates="application", cascade="all, delete")
+    scores = db.relationship('ApplicationScore',back_populates='application',cascade='all, delete')
 
     @property
     def user(self): 
@@ -135,17 +133,8 @@ class ApplicationScore(db.Model):
     __bind_key__ = 'scholarship_db'
 
     id = db.Column(db.Integer, primary_key=True)
-    application_id = db.Column(
-        db.Integer,
-        db.ForeignKey('application.id', ondelete='CASCADE'),
-        nullable=False,
-        unique=True
-    )
-    scholarship_id = db.Column(
-        db.Integer,
-        db.ForeignKey('scholarship.id', ondelete='CASCADE'),
-        nullable=False
-    )
+    application_id = db.Column(db.Integer, db.ForeignKey('application.id', ondelete='CASCADE'),nullable=False,unique=True)
+    scholarship_id = db.Column(db.Integer, db.ForeignKey('scholarship.id', ondelete='CASCADE'), nullable=False)
     score = db.Column(db.Integer, nullable=False)
     is_overridden = db.Column(db.Boolean, default=False, nullable=False)
 
@@ -228,3 +217,15 @@ class AuditLog(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.now, nullable=False)
 
     user = db.relationship("User", backref="audit_logs")
+
+class Document(db.Model):
+    __bind_key__ = 'scholarship_db'
+    id = db.Column(db.Integer, primary_key=True)
+    application_id = db.Column(db.Integer, db.ForeignKey("application.id"), nullable=False)
+    file_name = db.Column(db.String(255), nullable=False)
+    file_type = db.Column(db.String(50))  # e.g., transcript, essay, recommendation
+    upload_date = db.Column(db.DateTime, default=datetime.datetime.now)
+    file_data = db.Column(db.LargeBinary, nullable=False)  # <— store the file itself here
+    mime_type = db.Column(db.String(100))  # e.g., application/pdf, image/png
+
+    application = db.relationship("Application", back_populates="documents")
