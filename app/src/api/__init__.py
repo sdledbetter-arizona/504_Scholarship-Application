@@ -16,3 +16,4 @@ api.add_resource(ScholarshipResource, "/scholarships", "/scholarships/<int:schol
 api.add_resource(ApplicationResource, "/applications", "/applications/<int:app_id>")
 api.add_resource(ApplicationScoreResource, "/applications", "/applications/<int:app_id>/score","/applications/<int:app_id>/score/<string:action>")
 api.add_resource(NotificationResource, "/notifications","/notifications/<int:id>")
+api.add_resource(DocumentResource,"/documents", "/documents/<int:id>")

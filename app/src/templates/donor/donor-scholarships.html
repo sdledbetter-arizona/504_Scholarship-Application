@@ -79,7 +79,8 @@
       <td>{{ scholarship.scholarships_available }}</td>
       <td>{{ scholarship.application_deadline.strftime('%Y-%m-%d') }}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="saveValueAndNavigate('{{scholarship.name}}')">Applications</button>
+        <button class="btn btn-primary btn-sm"
+          onclick="saveValueAndNavigate('{{scholarship.name}}')">Applications</button>
         <button class="btn btn-secondary btn-sm" data-bs-toggle="offcanvas"
           data-bs-target="#editScholarshipOffcanvas{{scholarship.id}}"
           aria-controls="editScholarshipOffcanvas{{scholarship.id}}">Edit</button>
@@ -120,6 +121,43 @@
             <label for="requiredGPA" class="form-label">Required GPA</label>
             <input type="number" class="form-control" id="requiredGPA" name="required_gpa"
               value="{{scholarship.required_gpa or ''}}" step="0.01" min="0">
+          </div>
+          <div class="mb-3">
+            <label for="required_year{{scholarship.id}}" class="form-label">Required Year</label>
+            <select name="required_year" class="form-control" id="required_year{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_year=="None" %}selected{% endif %}>None</option>
+              <option value="Freshman" {% if scholarship.required_year=="Freshman" %}selected{% endif %}>Freshman
+              </option>
+              <option value="Sophomore" {% if scholarship.required_year=="Sophomore" %}selected{% endif %}>Sophomore
+              </option>
+              <option value="Junior" {% if scholarship.required_year=="Junior" %}selected{% endif %}>Junior</option>
+              <option value="Senior" {% if scholarship.required_year=="Senior" %}selected{% endif %}>Senior</option>
+              <option value="Graduate" {% if scholarship.required_year=="Graduate" %}selected{% endif %}>Graduate
+              </option>
+            </select>
+          </div>
+
+          <!-- Required Ethnicity -->
+          <div class="mb-3">
+            <label for="required_ethnicity{{scholarship.id}}" class="form-label">Required Ethnicity</label>
+            <select name="required_ethnicity" class="form-control" id="required_ethnicity{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_ethnicity=="None" %}selected{% endif %}>None</option>
+              <option value="Caucasian" {% if scholarship.required_ethnicity=="Caucasian" %}selected{% endif %}>
+                Caucasian</option>
+              <option value="Hispanic" {% if scholarship.required_ethnicity=="Hispanic" %}selected{% endif %}>Hispanic
+              </option>
+              <option value="Black" {% if scholarship.required_ethnicity=="Black" %}selected{% endif %}>Black</option>
+              <option value="European" {% if scholarship.required_ethnicity=="European" %}selected{% endif %}>European
+              </option>
+              <option value="Asian" {% if scholarship.required_ethnicity=="Asian" %}selected{% endif %}>Asian</option>
+              <option value="Indian" {% if scholarship.required_ethnicity=="Indian" %}selected{% endif %}>Indian
+              </option>
+              <option value="American Indian" {% if scholarship.required_ethnicity=="American Indian" %}selected{% endif
+                %}>American Indian</option>
+              <option value="Arabic/Middle Eastern" {% if scholarship.required_ethnicity=="Arabic/Middle Eastern"
+                %}selected{% endif %}>Arabic/Middle Eastern</option>
+              <option value="Other" {% if scholarship.required_ethnicity=="Other" %}selected{% endif %}>Other</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="applicationDeadline" class="form-label">Application Deadline</label>
@@ -198,13 +236,13 @@
             <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" step="0.01"
               min="0" required>
           </div>
-            <input type="text" class="form-control-plaintext" id="donor_name" name="donor_name"
-              value="{{current_user.first_name}} {{current_user.last_name}}" hidden readonly>
-            <input type="text" class="form-control-plaintext" id="donor_phone" name="donor_phone"
-              value="{{current_user.phone_num}}" hidden readonly>
-            <input type="text" class="form-control-plaintext" id="donor_email" name="donor_email"
-              value="{{current_user.email}}" hidden readonly>
-          
+          <input type="text" class="form-control-plaintext" id="donor_name" name="donor_name"
+            value="{{current_user.first_name}} {{current_user.last_name}}" hidden readonly>
+          <input type="text" class="form-control-plaintext" id="donor_phone" name="donor_phone"
+            value="{{current_user.phone_num}}" hidden readonly>
+          <input type="text" class="form-control-plaintext" id="donor_email" name="donor_email"
+            value="{{current_user.email}}" hidden readonly>
+
           <div class="mb-3">
             <label for="scholarshipsAvailable" class="form-label">Scholarships Available</label>
             <input type="number" class="form-control" id="scholarshipsAvailable" name="scholarships_available"
@@ -230,10 +268,37 @@
               placeholder="Enter required GPA (optional)" min=".01" step="0.01">
           </div>
           <div class="mb-3">
+            <label for="required_year" class="form-label">Required Year</label>
+            <select name="required_year" class="form-control" id="required_year">
+              <option value="None">None</option>
+              <option value="Freshman">Freshman</option>
+              <option value="Sophomore">Sophomore</option>
+              <option value="Junior">Junior</option>
+              <option value="Senior">Senior</option>
+              <option value="Graduate">Graduate</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="required_ethnicity" class="form-label">Required Ethnicity</label>
+            <select name="required_ethnicity" class="form-control" id="required_ethnicity">
+              <option value="None">None</option>
+              <option value="Caucasian">Caucasian</option>
+              <option value="Hispanic">Hispanic</option>
+              <option value="Black">Black</option>
+              <option value="European">European</option>
+              <option value="Asian">Asian</option>
+              <option value="Indian">Indian</option>
+              <option value="American Indian">American Indian</option>
+              <option value="Arabic/Middle Eastern">Arabic/Middle Eastern</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
             <label for="applicationDeadline" class="form-label">Application Deadline</label>
             <input type="date" class="form-control" id="applicationDeadline" name="application_deadline" required>
           </div>
-          <div class="mb-3">
+          <div class="">
             <label for="otherRequirements" class="form-label">Other Requirements</label>
             <textarea class="form-control" id="otherRequirements" name="other_requirements"
               placeholder="Enter any additional requirements (optional)" rows="3"></textarea>
@@ -316,57 +381,57 @@
 
     // Add event listener for Enter key
     containerElement.addEventListener('keydown', (event) => {
-        if (event.target.id === inputId && event.key === 'Enter') {
-            event.preventDefault();
+      if (event.target.id === inputId && event.key === 'Enter') {
+        event.preventDefault();
 
-            const tag = capitalizeWords(event.target.value.trim());
-            if (tag && !tags.includes(tag)) {
-                tags.push(tag);
-                updateTagsDisplay();
-                event.target.value = ''; // Clear input field
-            }
+        const tag = capitalizeWords(event.target.value.trim());
+        if (tag && !tags.includes(tag)) {
+          tags.push(tag);
+          updateTagsDisplay();
+          event.target.value = ''; // Clear input field
         }
+      }
     });
 
     function updateTagsDisplay() {
-        containerElement.innerHTML = ''; // Clear the container
+      containerElement.innerHTML = ''; // Clear the container
 
-        // Render the tags in the container
-        tags.forEach((tag) => {
-            const tagElement = document.createElement('div');
-            tagElement.className = 'tag';
-            tagElement.innerHTML = `${tag} <span class="remove">&times;</span>`;
-            tagElement.querySelector('.remove').addEventListener('click', () => removeTag(tag));
-            containerElement.appendChild(tagElement);
-        });
+      // Render the tags in the container
+      tags.forEach((tag) => {
+        const tagElement = document.createElement('div');
+        tagElement.className = 'tag';
+        tagElement.innerHTML = `${tag} <span class="remove">&times;</span>`;
+        tagElement.querySelector('.remove').addEventListener('click', () => removeTag(tag));
+        containerElement.appendChild(tagElement);
+      });
 
-        // Recreate the input field
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.id = inputId;
-        input.placeholder = placeholderText;
-        input.className = 'form-control border-0 bg-transparent';
-        containerElement.appendChild(input);
+      // Recreate the input field
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = inputId;
+      input.placeholder = placeholderText;
+      input.className = 'form-control border-0 bg-transparent';
+      containerElement.appendChild(input);
 
-        // Update hidden input with serialized tags
-        hiddenInputElement.value = JSON.stringify(tags);
+      // Update hidden input with serialized tags
+      hiddenInputElement.value = JSON.stringify(tags);
     }
 
     function removeTag(tag) {
-        tags = tags.filter((t) => t !== tag);
-        updateTagsDisplay();
+      tags = tags.filter((t) => t !== tag);
+      updateTagsDisplay();
     }
 
     function capitalizeWords(str) {
-        return str
-            .split(' ')
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ');
+      return str
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
     }
 
     // Initialize preloaded tags
     updateTagsDisplay();
-}
+  }
 
 
 
@@ -388,40 +453,40 @@
 
     // Loop through scholarships
     const scholarships = [
-        {% for scholarship in scholarships %}
+      {% for scholarship in scholarships %}
         {
-            id: {{ scholarship.id }},
-            majors: {{ scholarship.eligible_majors | tojson }},
-            minors: {{ scholarship.eligible_minors | tojson }}
+      id: {{ scholarship.id }},
+    majors: {{ scholarship.eligible_majors | tojson }},
+    minors: {{ scholarship.eligible_minors | tojson }}
         }
-        {% if not loop.last %}, {% endif %}
-        {% endfor %}
+    {% if not loop.last %}, {% endif %}
+  {% endfor %}
     ];
 
-    scholarships.forEach(scholarship => {
-        initializeTagInput(
-            `edittagsInput${scholarship.id}`,
-            `edittagsInputContainer${scholarship.id}`,
-            `editeligibleMajors${scholarship.id}`,
-            'Type a major and press Enter',
-            scholarship.majors // Preloaded majors
-        );
+  scholarships.forEach(scholarship => {
+    initializeTagInput(
+      `edittagsInput${scholarship.id}`,
+      `edittagsInputContainer${scholarship.id}`,
+      `editeligibleMajors${scholarship.id}`,
+      'Type a major and press Enter',
+      scholarship.majors // Preloaded majors
+    );
 
-        initializeTagInput(
-            `editminortagsInput${scholarship.id}`,
-            `editminortagsInputContainer${scholarship.id}`,
-            `editeligibleMinors${scholarship.id}`,
-            'Type a minor and press Enter',
-            scholarship.minors // Preloaded minors
-        );
-    });
+    initializeTagInput(
+      `editminortagsInput${scholarship.id}`,
+      `editminortagsInputContainer${scholarship.id}`,
+      `editeligibleMinors${scholarship.id}`,
+      'Type a minor and press Enter',
+      scholarship.minors // Preloaded minors
+    );
+  });
 
   });
 
   function saveValueAndNavigate(value) {
-        localStorage.setItem("inputValue", value);
-        window.location.href = "/donor/applications";
-    }
+    localStorage.setItem("inputValue", value);
+    window.location.href = "/donor/applications";
+  }
 
 </script>
 

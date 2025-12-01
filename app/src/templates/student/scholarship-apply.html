@@ -26,11 +26,11 @@
         <h4 class="mb-3">Fill in the Items Below:</h4>
 
         <div class="row mb-4 justify-content-evenly">
-            <button class="btn btn-primary col-5" onclick="autofillProfileInfo()">Auto-fill Profile Info</button>
+            <button class="btn btn-ua-blue col-5" onclick="autofillProfileInfo()">Auto-fill Profile Info</button>
             <button class="btn btn-secondary col-5" onclick="clearForm()">Clear All Fields</button>
         </div>
 
-        <form method="post" onsubmit="return validateMajorOrMinor()" id="applicationForm">
+        <form method="post" enctype="multipart/form-data" onsubmit="return validateMajorOrMinor()" id="applicationForm">
 
             <div class="row">
                 <!-- Preferred Pronoun -->
@@ -101,6 +101,25 @@
                 </select>
             </div>
 
+            <div class="row">
+                <div class="mb-3 col-6">
+                <label for="documentType" class="form-label">Document Type</label>
+                <select class="form-select" id="documentType" name="document_type">
+                    <option value="" disabled selected>No Document</option>
+                    <option value="transcript">Transcript</option>
+                    <option value="essay">Essay</option>
+                    <option value="recommendation">Recommendation Letter</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+                <!-- Supporting Document Upload -->
+                <div class="mb-3 col-6">
+                    <label for="document" class="form-label">Upload Supporting Document</label>
+                    <input class="form-control" type="file" id="document" name="document"
+                        accept=".pdf,.doc,.docx,.png,.jpg,.jpeg">
+                </div>
+            </div>
+
             <!-- Personal Statement Essay -->
             <div class="mb-3">
                 <label for="personalStatement" class="form-label">Personal Statement Essay</label>
@@ -116,7 +135,7 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+            <button type="submit" class="btn btn-ua-red w-100">Submit Application</button>
         </form>
 
     </div>
@@ -141,15 +160,11 @@
                 </p>
                 <div class="row m-0 gap-2 column-gap-0 d-grid text-center"
                     style="grid-template-columns: 1fr 1fr; padding-top:5px;">
+                    {% for req in eligible_reqs %}
                     <div class="col">
-                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">GPA</div>
+                        <div class="bg-ua-blue p-1 text-white" style=" border-radius: 10px; font-size:.7rem;">{{req}}</div>
                     </div>
-                    <div class="col">
-                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">Major</div>
-                    </div>
-                    <div class="col">
-                        <div class="bg-primary-subtle p-1" style=" border-radius: 10px; font-size:.7rem;">Minor</div>
-                    </div>
+                    {% endfor %}
 
                 </div>
             </div>
@@ -183,15 +198,15 @@
 <script>
 
     function validateMajorOrMinor() {
-            const major = document.getElementById("major").value.trim();
-            const minor = document.getElementById("minor").value.trim();
+        const major = document.getElementById("major").value.trim();
+        const minor = document.getElementById("minor").value.trim();
 
-            if (major === "" && minor === "") {
-                alert("Please fill in either the Major or Minor field.");
-                return false; // Prevents form submission
-            }
-            return true; // Allows form submission
+        if (major === "" && minor === "") {
+            alert("Please fill in either the Major or Minor field.");
+            return false; // Prevents form submission
         }
+        return true; // Allows form submission
+    }
 
 
     async function autofillProfileInfo() {
@@ -222,16 +237,16 @@
     }
 
     function clearForm() {
-    // Get the form element by its ID
-    const form = document.getElementById("applicationForm");
+        // Get the form element by its ID
+        const form = document.getElementById("applicationForm");
 
-    if (form) {
-        // Loop through each form field
-        form.reset(); // This resets all the fields to their initial values
-    } else {
-        console.error(`Form with ID "${formId}" not found.`);
+        if (form) {
+            // Loop through each form field
+            form.reset(); // This resets all the fields to their initial values
+        } else {
+            console.error(`Form with ID "${formId}" not found.`);
+        }
     }
-}
 
 
 </script>

@@ -31,7 +31,7 @@
       <td>
         <div class="row align-items-center justify-content-between ">
           <span data-bs-toggle="modal" data-bs-target="#editScoreModal{{application.id}}"
-            class="btn w-auto badge {% if application.scores[0].score  == 4 %} text-bg-success {% elif application.scores[0].score  == 3 %} text-bg-warning {% elif application.scores[0].score  == 2 %} text-bg-primary {% elif application.scores[0].score  == 1 %} text-bg-secondary {% else %} text-bg-dark{% endif %}">{{application.scores[0].score
+            class="btn w-auto badge {% if application.scores[0].score  == 5 %} text-bg-success {% elif application.scores[0].score  == 4 %} text-bg-warning {% elif application.scores[0].score  == 3 %} text-bg-primary {% elif application.scores[0].score  == 2 %} text-bg-secondary {% elif application.scores[0].score  == 1 %} text-bg-info {% else %} text-bg-danger{% endif %}">{{application.scores[0].score
             }}</span>
           {% if application.scores[0].is_overridden == true %}
           <button class="btn w-auto btn-primary btn-sm" onclick="resetApplicationScore('{{application.id}}')">Reset
@@ -40,13 +40,14 @@
         </div>
       </td>
       <td>
-
-        <button class="btn btn-ua-blue btn-sm" data-bs-toggle="modal"
+        <button class="btn btn-ua-red btn-sm" data-bs-toggle="modal"
           data-bs-target="#DecisionApplicationModal{{application.id}}">Decision</button>
+          <button class="btn btn-ua-blue btn-sm" data-bs-toggle="modal"
+            data-bs-target="#DocumentModal{{application.id}}">Document</button>
         <button class="btn btn-secondary btn-sm" data-bs-toggle="offcanvas"
           data-bs-target="#editApplicationOffcanvas{{application.id}}"
           aria-controls="editScholarshipOffcanvas{{application.id}}">Edit</button>
-        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+        <button class="btn btn-ua-red btn-sm" data-bs-toggle="modal"
           data-bs-target="#DeleteApplicationModal{{application.id}}">Delete</button>
       </td>
     </tr>
@@ -188,7 +189,7 @@
 
               <div class="mb-3">
                 <label for="scoreInput" class="form-label">New Score</label>
-                <input type="number" class="form-control" id="scoreInput" name="score" min="0" max="4" required>
+                <input type="number" class="form-control" id="scoreInput" name="score" min="0" max="5" required value="{{application.scores[0].score}}">
               </div>
             </form>
           </div>
@@ -223,7 +224,77 @@
         </div>
       </div>
     </div>
+{% set document = application.documents[0] if application.documents and application.documents|length > 0 else None
+      %}
 
+      <div class="modal fade" id="DocumentModal{{application.id}}" tabindex="-1"
+        aria-labelledby="DocumentModalLabel{{application.id}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-ua-red text-white">
+              <i class="bi-file-earmark-richtext" style="font-size:25px;"></i>
+              <h1 class="modal-title fs-5" id="DocumentModalLabel{{application.id}}">
+                <strong>&nbsp;Manage Document for "{{ application.scholarship.name }}"</strong>
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              {% if document %}
+              <!-- Existing document info -->
+              <div class="mb-3">
+                <p><strong>Current Document:</strong> {{ document.file_name }}</p>
+                <p><strong>Type:</strong> {{ document.file_type or 'N/A' }}</p>
+
+                <a href="/documents/{{ document.id }}/download" class="btn btn-outline-primary btn-sm" target="_blank">
+                  <i class="bi bi-download"></i> Download
+                </a>
+
+                <button type="button" class="btn btn-outline-danger btn-sm"
+                  onclick="DeleteDocument('{{ document.id }}', '{{ application.id }}')">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              </div>
+
+              <hr>
+              <p class="mb-2"><strong>Add / Replace Document</strong></p>
+              <p class="text-muted" style="font-size:.9rem;">
+                Uploading a new file will replace the current one for this application.
+              </p>
+              {% else %}
+              <p class="mb-2"><strong>No document on file for this application.</strong></p>
+              <p class="text-muted" style="font-size:.9rem;">
+                You can upload a supporting document (transcript, essay, etc.) below.
+              </p>
+              {% endif %}
+
+              <form id="documentForm{{application.id}}">
+                <div class="mb-3">
+                  <label for="documentFile{{application.id}}" class="form-label">Select File</label>
+                  <input class="form-control" type="file" id="documentFile{{application.id}}" name="document">
+                </div>
+
+                <div class="mb-3">
+                  <label for="documentType{{application.id}}" class="form-label">Document Type</label>
+                  <select class="form-select" id="documentType{{application.id}}" name="document_type">
+                    <option value="transcript">Transcript</option>
+                    <option value="essay">Essay</option>
+                    <option value="recommendation">Recommendation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-ua-blue" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-ua-red"
+                onclick="UploadDocument('{{ application.id }}', '{{ document.id if document else '' }}')">
+                Save Document
+              </button>
+            </div>
+          </div>
+        </div>
     {% endfor %}
   </tbody>
 </table>
@@ -259,6 +330,96 @@
         location.reload();
       })
       .catch(error => console.error("Error:", error));
+  }
+
+  function UploadDocument(applicationId, existingDocumentId) {
+    const fileInput = document.getElementById(`documentFile${applicationId}`);
+    const typeSelect = document.getElementById(`documentType${applicationId}`);
+
+    if (!fileInput.files.length) {
+      alert("Please choose a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("document", fileInput.files[0]);
+    formData.append("application_id", applicationId);
+    formData.append("document_type", typeSelect.value);
+
+    // Helper to actually POST the new document
+    const doUpload = () => {
+      fetch(`/api/documents`, {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to upload document");
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Document upload success:", data);
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("There was an error uploading the document.");
+        });
+    };
+
+    // If there is an existing document, delete it first
+    if (existingDocumentId && existingDocumentId !== "None" && existingDocumentId !== "") {
+      if (!confirm("This will replace your existing document. Continue?")) {
+        return;
+      }
+
+      fetch(`/api/documents/${existingDocumentId}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to delete existing document");
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Existing document deleted:", data);
+          // Now upload the new document
+          doUpload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("There was an error deleting the existing document.");
+        });
+    } else {
+      // No existing document, just upload
+      doUpload();
+    }
+  }
+
+  function DeleteDocument(documentId, applicationId) {
+    if (!confirm("Are you sure you want to delete this document? This cannot be undone.")) {
+      return;
+    }
+
+    fetch(`/api/documents/${documentId}`, {
+      method: 'DELETE'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to delete document");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Document delete success:", data);
+        location.reload();
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("There was an error deleting the document.");
+      });
   }
 
   function DeleteApplication(application_id) {

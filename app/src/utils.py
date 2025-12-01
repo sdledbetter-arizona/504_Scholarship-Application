@@ -161,12 +161,14 @@ def calculate_matching_score(scholarship_id, application_id):
     missed_requirements = total_requirements - matched_requirements
     
     if missed_requirements == 0:
-        return 4
+        return 5
     elif missed_requirements == 1:
-        return 3
+        return 4
     elif missed_requirements == 2:
-        return 2
+        return 3
     elif missed_requirements == 3:
+        return 2
+    elif missed_requirements == 4:
         return 1
     else:
         return 0
