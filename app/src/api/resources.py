@@ -342,7 +342,7 @@ class UserResource(Resource):
     def post(self):
         data = request.get_json()
 
-        new_user = User()
+        new_user = User(username=data["username"], email=data["email"], password = data["password"], first_name=data["first_name"], last_name=data["last_name"], net_id=data["net_id"], phone_num=data["phone_num"])
         db.session.add(new_user)
         db.session.flush()
 
