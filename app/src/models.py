@@ -87,7 +87,7 @@ class Scholarship(db.Model):
     @property
     def requirements(self):
         return {
-            "gpa" : float(self.required_gpa),
+            "gpa" : float(self.required_gpa) if self.required_gpa is not None else None,
             "major" : self.eligible_majors,
             "minor" : self.eligible_minors,
             "year" : self.required_year,
@@ -121,7 +121,7 @@ class Application(db.Model):
     @property
     def results(self):
         return {
-            "gpa" : self.cumulative_gpa,
+            "gpa" : float(self.cumulative_gpa) if self.cumulative_gpa is not None else None,
             "major" : self.major,
             "minor" : self.minor,
             "year" : self.current_year,
