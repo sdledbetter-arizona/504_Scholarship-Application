@@ -106,8 +106,8 @@
           </div>
           <div class="mb-3">
             <label for="requiredGPA" class="form-label">Required GPA</label>
-            <input type="number" class="form-control" id="requiredGPA" name="required_gpa"
-              value="{{scholarship.required_gpa or ''}}" step="0.01" min="0">
+            <input type="text" class="form-control gpa-input" id="requiredGPA" name="required_gpa"
+              value="{{scholarship.required_gpa or ''}}">
           </div>
           <div class="mb-3">
             <label for="required_year{{scholarship.id}}" class="form-label">Required Year</label>
@@ -203,7 +203,41 @@
 
 
 <script>
+ document.addEventListener("DOMContentLoaded", () => {
 
+
+    const gpaInputs = document.querySelectorAll(".gpa-input");
+
+    gpaInputs.forEach(input => {
+      input.addEventListener("input", function () {
+        const field = this;
+
+        const start = field.selectionStart;
+        const end = field.selectionEnd;
+
+        let value = field.value;
+
+        // Remove invalid characters
+        let cleaned = value.replace(/[^0-9.]/g, "");
+
+        // Allow only one decimal point
+        const parts = cleaned.split(".");
+        if (parts.length > 2) {
+          cleaned = parts[0] + "." + parts.slice(1).join("");
+        }
+
+        // Update value only if changed
+        if (cleaned !== value) {
+          field.value = cleaned;
+
+          const diff = value.length - cleaned.length;
+          const newPos = start - diff;
+          field.setSelectionRange(newPos, newPos);
+        }
+      });
+    });
+
+  });
 
   function DeleteScholarship(scholarship_id) {
     fetch(`/api/scholarships/${scholarship_id}`, {

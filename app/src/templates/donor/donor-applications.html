@@ -92,8 +92,8 @@
           <!-- Cumulative GPA -->
           <div class="mb-3">
             <label for="cumulativeGPA" class="form-label">Cumulative GPA</label>
-            <input type="number" class="form-control" id="cumulativeGPA" name="cumulative_gpa"
-              value="{{application.cumulative_gpa or ''}}" step="0.1" min="0.0" max="4.0">
+            <input type="text" class="form-control gpa-input" id="cumulativeGPA" name="cumulative_gpa"
+              value="{{application.cumulative_gpa or ''}}" inputmode="decimal">
           </div>
 
           <!-- Current Year -->
@@ -212,7 +212,8 @@
 
               <div class="mb-3">
                 <label for="scoreInput" class="form-label">New Score</label>
-                <input type="number" class="form-control" id="scoreInput" name="score" min="0" max="5" required value="{{application.scores[0].score}}">
+                <input type="number" class="form-control" id="scoreInput" name="score" min="0" max="5" required
+                  value="{{application.scores[0].score}}">
               </div>
             </form>
           </div>
@@ -366,8 +367,8 @@
       })
       .catch(error => console.error("Error:", error));
   }
-  
-function UploadDocument(applicationId, existingDocumentId) {
+
+  function UploadDocument(applicationId, existingDocumentId) {
     const fileInput = document.getElementById(`documentFile${applicationId}`);
     const typeSelect = document.getElementById(`documentType${applicationId}`);
 
@@ -544,6 +545,41 @@ function UploadDocument(applicationId, existingDocumentId) {
       })
       .catch(error => console.error("Error:", error));
   }
+  document.addEventListener("DOMContentLoaded", () => {
+
+
+    const gpaInputs = document.querySelectorAll(".gpa-input");
+
+    gpaInputs.forEach(input => {
+      input.addEventListener("input", function () {
+        const field = this;
+
+        const start = field.selectionStart;
+        const end = field.selectionEnd;
+
+        let value = field.value;
+
+        // Remove invalid characters
+        let cleaned = value.replace(/[^0-9.]/g, "");
+
+        // Allow only one decimal point
+        const parts = cleaned.split(".");
+        if (parts.length > 2) {
+          cleaned = parts[0] + "." + parts.slice(1).join("");
+        }
+
+        // Update value only if changed
+        if (cleaned !== value) {
+          field.value = cleaned;
+
+          const diff = value.length - cleaned.length;
+          const newPos = start - diff;
+          field.setSelectionRange(newPos, newPos);
+        }
+      });
+    });
+
+  });
 
 </script>
 
