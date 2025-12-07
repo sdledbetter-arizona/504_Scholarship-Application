@@ -268,8 +268,8 @@
             <div class="mb-3 col-4">
               <label for="cumulative_gpa" class="form-label">Cumulative GPA</label>
               <div>
-                <input name="cumulative_gpa" type="text" class="form-control" id="cumulative_gpa"
-                  value="{{ profile.cumulative_gpa }}">
+                <input name="cumulative_gpa" id="cumulative_gpa" type="text" class="form-control" inputmode="decimal"
+                  value="{{ profile.cumulative_gpa }}" placeholder="None">
               </div>
             </div>
 
@@ -620,6 +620,38 @@
 
       });
     }
+
+    document.getElementById("cumulative_gpa").addEventListener("input", function (e) {
+      const input = this;
+
+      // Save cursor position
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+
+      let value = input.value;
+
+      // Remove invalid characters
+      let cleaned = value.replace(/[^0-9.]/g, "");
+
+      // Allow only one decimal point
+      const parts = cleaned.split(".");
+      if (parts.length > 2) {
+        cleaned = parts[0] + "." + parts.slice(1).join("");
+      }
+
+      // Update value only if changed
+      if (cleaned !== value) {
+        input.value = cleaned;
+
+        // Calculate new cursor position
+        const diff = value.length - cleaned.length;
+        const newPos = start - diff;
+
+        // Restore cursor position safely
+        input.setSelectionRange(newPos, newPos);
+      }
+    });
+
   });
 
 </script>

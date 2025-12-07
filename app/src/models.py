@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(50), nullable=False, default='Enabled') 
     
-    student_profile = db.relationship('StudentProfile', backref='user_account', uselist=False, lazy=True)
+    student_profile = db.relationship('StudentProfile', backref='user_account', uselist=False, lazy=True, cascade='all, delete-orphan')
     security_questions = db.relationship('UserSecurityQuestion', backref='user', lazy=True, cascade='all, delete-orphan')
     approvals = db.relationship('TicketRequest', foreign_keys='TicketRequest.approved_by', backref='approver', lazy=True)
     notifications = db.relationship("Notification",backref="user", cascade="all, delete")
