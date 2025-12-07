@@ -6,6 +6,8 @@ from .models import StudentProfile, User, SecurityQuestion, TicketRequest, Schol
 from . import db
 from .utils import apply_changes_with_audit
 from io import BytesIO
+from . import mail
+from flask_mail import Message
 
 
 views = Blueprint('views', __name__)
@@ -54,7 +56,35 @@ def download_document(id):
 
 
 @views.route('/about')
+def about():
+    return render_template("views/about.html", user=current_user)
+
+@views.route('/need-help',methods=["GET","POST"])
 def need_help():
+    if(request.method == 'POST'):
+
+        admins = User.query.filter_by(user_type='Scholarship Admin', status='Enabled').all()
+        admin_emails = [admin.email for admin in admins if admin.email]
+
+        name = request.form.get("name")
+        email = request.form.get("email")
+        topic = request.form.get("topic")
+        message = request.form.get("message")
+
+        msg = Message(f"SAS - Support request:{topic}", recipients=[], bcc=admin_emails)
+        msg.body = f"""
+        A new support request has been submitted.
+
+        Name: {name}
+        Email: {email}
+        Topic: {topic}
+        Message:
+        {message}
+        """
+
+        mail.send(msg)
+
+
     return render_template("views/need-help.html", user=current_user)
 
 
