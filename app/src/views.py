@@ -71,9 +71,9 @@ def need_help():
         topic = request.form.get("topic")
         message = request.form.get("message")
 
-        msg = Message(f"SAS - Support request:{topic}", recipients=[], bcc=admin_emails)
+        msg = Message(f"SAS - Support request:{topic}", recipients=admin_emails)
         msg.body = f"""
-        A new support request has been submitted.
+        An inquiry from the need help page.
 
         Name: {name}
         Email: {email}
