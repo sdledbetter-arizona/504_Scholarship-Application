@@ -27,20 +27,27 @@ def login():
 
         if user:
             if check_password_hash(user.password, password):
-                login_user(user, remember=True)
-                flash('Logged in successfully!', category='success')
-                log_change(
-                    user_id=current_user_id_or_none(),
-                    action="Login Successful",
-                    entity=current_user,
-                    field_name=None,
-                    old_value=None,
-                    new_value=None,
-                )
-                
-                db.session.commit()
 
-                return redirect(url_for('views.home'))
+                if user.status == "Enabled":
+
+                    login_user(user, remember=True)
+                    flash('Logged in successfully!', category='success')
+                    log_change(
+                        user_id=current_user_id_or_none(),
+                        action="Login Successful",
+                        entity=current_user,
+                        field_name=None,
+                        old_value=None,
+                        new_value=None,
+                    )
+                    
+                    db.session.commit()
+
+                    return redirect(url_for('views.home'))
+                
+                else:
+                    flash('Your account is currently set to disabled.', category='danger')
+                    return render_template("auth/login.html", user=current_user)
             else:
                 flash('Incorrect username/password.', category='danger')
                 log_change(
