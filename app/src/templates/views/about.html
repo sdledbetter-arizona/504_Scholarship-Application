@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block content %}
+<div class="container py-5">
+
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-semibold text-dark">About the Scholarship Application System</h1>
+        <p class="lead mb-5 text-secondary">Built to simplify the process of finding, applying to, and managing scholarships.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Project Overview -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title fw-semibold mb-3">Project Overview</h4>
+                    <p>
+                        The Scholarship Application System is designed to streamline how students discover 
+                        scholarship opportunities, manage their applications, and receive updates in real-time. 
+                        Our goal is to simplify the experience for both scholarship applicants and administrative users.
+                    </p>
+                    <p>
+                        The platform includes scholarship listing and matching tools, a robust application workflow, 
+                        user account management, and an integrated notification system to keep students informed of 
+                        updates instantly.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Features -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title fw-semibold mb-3">Key Features</h4>
+                    <ul class="list-unstyled fs-6">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Browse and filter scholarship opportunities</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Submit and track scholarship applications</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>User dashboard for applicants and administrators</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>In-app notification system for important updates</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Fully audited change tracking for transparency</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Responsive Bootstrap interface</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technology Stack -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title fw-semibold mb-3">Technology Stack</h4>
+                    <p>Our system is built using modern and scalable technologies:</p>
+                    <ul class="list-unstyled fs-6">
+                        <li class="mb-2"><i class="bi bi-code-slash text-primary me-2"></i><strong>Backend:</strong> Python, Flask, SQLAlchemy, Alembic</li>
+                        <li class="mb-2"><i class="bi bi-server text-primary me-2"></i><strong>Database:</strong> SQLite (development), PostgreSQL/MySQL (production-ready)</li>
+                        <li class="mb-2"><i class="bi bi-brush text-primary me-2"></i><strong>Frontend:</strong> HTML, Jinja2, Bootstrap 5</li>
+                        <li class="mb-2"><i class="bi bi-bell text-primary me-2"></i><strong>Notifications:</strong> In-app alert system integrated in the UI</li>
+                        <li class="mb-2"><i class="bi bi-shield-lock text-primary me-2"></i><strong>Security:</strong> PBKDF2 password hashing, session-based authentication</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Members -->
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h4 class="card-title fw-semibold mb-3">Project Team</h4>
+
+                    <ul class="list-unstyled fs-6">
+                        <li class="mb-3">
+                            <strong>Sheldon Ledbetter</strong><br>
+                            Lead Engineer & Software Developer<br>
+                            <span class="text-muted small">Responsible for backend implementation, architecture, and core system features.</span>
+                        </li>
+
+                        <li class="mb-3">
+                            <strong>Rafael Estrada</strong><br>
+                            Software Developer<br>
+                            <span class="text-muted small">Worked on scholarship features, UI layouts, and backend integration.</span>
+                        </li>
+
+                        <li>
+                            <strong>Angela Miller</strong><br>
+                            Software Developer<br>
+                            <span class="text-muted small">Focused on application workflows, forms, and UI enhancements.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="text-center mt-5">
+        <p class="text-muted">
+            This project was created as part of the Software Engineering program at the University of Arizona.
+        </p>
+    </div>
+
+</div>
+{% endblock %}
