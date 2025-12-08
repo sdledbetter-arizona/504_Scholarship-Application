@@ -32,9 +32,10 @@ TODO
 
 
 ## Roadmap
-- **Release 1**: March 5
-- **Release 2**: April 3
-- **Release 3**: April 29
+- **Release 1**: September 30
+- **Release 2**: October 30
+- **Release 3**: November 30
+- **Final Release: December 10
 
 ## Authors and Acknowledgment
 - **S. D. Ledbetter** (sdledbetter@arizona.edu)
@@ -43,4 +44,5 @@ TODO
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Project Status
+
 In development
