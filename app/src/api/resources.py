@@ -706,8 +706,8 @@ class ScholarshipResource(Resource):
             eligible_majors=json.loads(data["eligible_majors"]) if data["eligible_majors"] else [],
             eligible_minors=json.loads(data["eligible_minors"]) if data["eligible_minors"] else [],
             required_gpa=data["required_gpa"],
-            required_year=data["required_year"],
-            required_ethnicity=data["required_ethnicity"],
+            required_year=data["required_year"] if data["required_year"] != "None" else None,
+            required_ethnicity=data["required_ethnicity"] if data["required_ethnicity"] != "None" else None,
             application_deadline=datetime.datetime.fromisoformat(data["application_deadline"]),
             other_requirements=data["other_requirements"],
         )
@@ -785,7 +785,7 @@ class ScholarshipResource(Resource):
             elif key in ("eligible_majors", "eligible_minors"):
                 clean_data[key] = json.loads(value) if value else []
             else:
-                clean_data[key] = None if value == "" else value
+                clean_data[key] = None if (value == "" or value == "None") else value
 
         field_map = {k: k for k in clean_data.keys()}
 
