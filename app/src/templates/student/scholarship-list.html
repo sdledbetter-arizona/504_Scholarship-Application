@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}List of Scholarships{% endblock %}
+
+
+
+{% block content %}
+
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">{{ criteria.value }}</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="\">Student</a></li>
+        <li class="breadcrumb-item"><a href="\student\scholarship-directory">Scholarship Directory</a></li>
+        <li class="breadcrumb-item active">{{ criteria.type }}</li>
+    </ol>
+</nav>
+<div class="row">
+    <table  id="scholarship-table">
+        <thead>
+            <tr>
+                <th style="width:1%;"></th>
+                <th class="p-3">Scholarship Title</th>
+                <th class="p-3">Amount</th>
+                <th class="p-3">Due Date</th>
+            </tr>
+        </thead>
+        <tbody style="font-weight:bold;">
+            {% for scholarship in scholarships %}
+            <tr class="bg-opacity-25">
+                <td class="bg-ua-red"></td>
+                <td class="p-3"><a href="\student\scholarship-directory\{{scholarship.id}}">{{scholarship.name}}</a></td>
+                <td class="p-3">${{"{:,.0f}".format(scholarship.amount)}}</td>
+                <td class="p-3">{{scholarship.application_deadline.strftime('%B %d, %Y')}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+  
+<script>
+    $(document).ready(function () {
+      $('#scholarship-table').DataTable({
+        // Enable searching, sorting, and pagination (enabled by default)
+        "paging": true,
+        "searching": false,
+        "ordering": true,
+        "order": [[1, "asc"]], // Default sort by Scholarship Name (column index 1)
+        "columnDefs": [
+          { "orderable": false, "targets": 0 } 
+        ]
+      });
+    });
+  </script>
+{% endblock %}

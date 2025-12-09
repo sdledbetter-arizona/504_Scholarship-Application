@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+{% block title %}My Applications{% endblock %}
+
+
+
+{% block content %}
+
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">My Applications</h1>
+<nav>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="\">Student</a></li>
+    <li class="breadcrumb-item active">Applications</li>
+  </ol>
+</nav>
+<div class="row">
+  <table id="scholarship-table">
+    <thead>
+      <tr>
+        <th style="width:1%;"></th>
+        <th class="p-3">Scholarship Title</th>
+        <th class="p-3">Amount</th>
+        <th class="p-3">Date Submitted</th>
+        <th class="p-3">Status</th>
+        <th class="p-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody style="font-weight:bold;">
+      {% for application in applications %}
+      <tr class="bg-opacity-25">
+        <td class="bg-ua-red"></td>
+        <td class="p-3">{{application.scholarship.name}}</td>
+        <td class="p-3">${{"{:,.0f}".format(application.scholarship.amount)}}</td>
+        <td class="p-3">{{application.date_submitted.strftime('%B %d, %Y')}}</td>
+        <td class="p-3">{{application.status}}</td>
+        <td class="p-3">
+          <button class="btn btn-ua-blue btn-sm" data-bs-toggle="modal"
+            data-bs-target="#DocumentModal{{application.id}}">Document</button>
+          <button class="btn btn-secondary btn-sm" data-bs-toggle="offcanvas"
+            data-bs-target="#editApplicationOffcanvas{{application.id}}"
+            aria-controls="editScholarshipOffcanvas{{application.id}}">Edit</button>
+          <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+            data-bs-target="#DeleteApplicationModal{{application.id}}">Delete</button>
+        </td>
+      </tr>
+      <!-- Offcanvas -->
+      <div class="offcanvas offcanvas-end" tabindex="-1" id="editApplicationOffcanvas{{application.id}}"
+        aria-labelledby="editApplicationOffcanvasLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="editApplicationOffcanvasLabel">Update Application</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <form id="applicationForm{{application.id}}">
+            <!-- Scholarship ID -->
+            <input type="hidden" name="scholarship_id" value="{{application.scholarship_id}}">
+
+            <!-- User ID -->
+            <input type="hidden" name="user_id" value="{{current_user.id}}">
+
+            <!-- Preferred Pronoun -->
+            <div class="mb-3">
+              <label for="preferredPronoun" class="form-label">Preferred Pronoun</label>
+              <input type="text" class="form-control" id="preferredPronoun" name="preferred_pronoun"
+                value="{{application.preferred_pronoun}}" maxlength="50">
+            </div>
+
+            <!-- Student ID -->
+            <div class="mb-3">
+              <label for="studentId" class="form-label">Student ID</label>
+              <input type="text" class="form-control" id="studentId" name="student_id"
+                value="{{application.student_id}}" maxlength="100">
+            </div>
+
+            <!-- Major -->
+            <div class="mb-3">
+              <label for="major" class="form-label">Major</label>
+              <input type="text" class="form-control" id="major" name="major" value="{{application.major}}"
+                maxlength="255">
+            </div>
+
+            <!-- Minor -->
+            <div class="mb-3">
+              <label for="minor" class="form-label">Minor</label>
+              <input type="text" class="form-control" id="minor" name="minor" value="{{application.minor}}"
+                maxlength="255">
+            </div>
+
+            <!-- Cumulative GPA -->
+            <div class="mb-3">
+              <label for="cumulativeGPA" class="form-label">Cumulative GPA</label>
+              <input type="number" class="form-control" id="cumulativeGPA" name="cumulative_gpa"
+                value="{{application.cumulative_gpa or ''}}" step="0.1" min="0.0" max="4.0">
+            </div>
+
+            <!-- Current Year -->
+            <div class="mb-3">
+              <label for="currentYear" class="form-label">Current Year</label>
+              <select class="form-select" id="currentYear" name="current_year">
+                <option value="Freshman" {% if application.current_year=='Freshman' %}selected{% endif %}>Freshman
+                </option>
+                <option value="Sophomore" {% if application.current_year=='Sophomore' %}selected{% endif %}>Sophomore
+                </option>
+                <option value="Junior" {% if application.current_year=='Junior' %}selected{% endif %}>Junior</option>
+                <option value="Senior" {% if application.current_year=='Senior' %}selected{% endif %}>Senior</option>
+                <option value="Graduate" {% if application.current_year=='Graduate' %}selected{% endif %}>Graduate
+                </option>
+              </select>
+            </div>
+
+            <!-- Ethnicity -->
+            <div class="mb-3">
+              <label for="ethnicity" class="form-label">Ethnicity</label>
+              <select class="form-select" id="ethnicity" name="ethnicity">
+                <option value="Caucasian" {% if application.ethnicity=='Caucasian' %}selected{% endif %}>Caucasian
+                </option>
+                <option value="Hispanic" {% if application.ethnicity=='Hispanic' %}selected{% endif %}>Hispanic</option>
+                <option value="Black" {% if application.ethnicity=='Black' %}selected{% endif %}>Black</option>
+                <option value="European" {% if application.ethnicity=='European' %}selected{% endif %}>European</option>
+                <option value="Asian" {% if application.ethnicity=='Asian' %}selected{% endif %}>Asian</option>
+                <option value="Indian" {% if application.ethnicity=='Indian' %}selected{% endif %}>Indian</option>
+                <option value="American Indian" {% if application.ethnicity=='American Indian' %}selected{% endif %}>
+                  American Indian</option>
+                <option value="Arabic/Middle Eastern" {% if application.ethnicity=='Arabic/Middle Eastern' %}selected{%
+                  endif %}>Arabic/Middle Eastern</option>
+                <option value="Other" {% if application.ethnicity=='Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+
+            <!-- Personal Statement Essay -->
+            <div class="mb-3">
+              <label for="personalStatementEssay" class="form-label">Personal Statement Essay</label>
+              <textarea class="form-control" id="personalStatementEssay" name="personal_statement_essay"
+                rows="5">{{application.personal_statement_essay}}</textarea>
+            </div>
+
+            <!-- Work Experience -->
+            <div class="mb-3">
+              <label for="workExperience" class="form-label">Work Experience</label>
+              <textarea class="form-control" id="workExperience" name="work_experience"
+                rows="5">{{application.work_experience}}</textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="button" onclick="UpdateApplication('applicationForm{{application.id}}', '{{application.id}}')"
+              class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+      </div>
+      <div class="modal fade" id="DeleteApplicationModal{{application.id}}" tabindex="-1"
+        aria-labelledby="DeleteApplicationModal{{application.id}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header bg-dark-subtle">
+              <i class="bi-info-circle-fill" style="font-size:25px;"></i>
+              <h1 class="modal-title fs-5" id="DeleteApplicationModalLabel"><strong>&nbsp;Delete Application</strong>
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Once the application deletion process is initiated, it cannot be reversed.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-danger" onclick="DeleteApplication('{{application.id}}')">Delete
+                Account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% set document = application.documents[0] if application.documents and application.documents|length > 0 else None
+      %}
+
+      <div class="modal fade" id="DocumentModal{{application.id}}" tabindex="-1"
+        aria-labelledby="DocumentModalLabel{{application.id}}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-ua-red text-white">
+              <i class="bi-file-earmark-richtext" style="font-size:25px;"></i>
+              <h1 class="modal-title fs-5" id="DocumentModalLabel{{application.id}}">
+                <strong>&nbsp;Manage Document for "{{ application.scholarship.name }}"</strong>
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+              {% if document %}
+              <!-- Existing document info -->
+              <div class="mb-3">
+                <p><strong>Current Document:</strong> {{ document.file_name }}</p>
+                <p><strong>Type:</strong> {{ document.file_type or 'N/A' }}</p>
+
+                <a href="/documents/{{ document.id }}/download" class="btn btn-outline-primary btn-sm" target="_blank">
+                  <i class="bi bi-download"></i> Download
+                </a>
+
+                <button type="button" class="btn btn-outline-danger btn-sm"
+                  onclick="DeleteDocument('{{ document.id }}', '{{ application.id }}')">
+                  <i class="bi bi-trash"></i> Delete
+                </button>
+              </div>
+
+              <hr>
+              <p class="mb-2"><strong>Add / Replace Document</strong></p>
+              <p class="text-muted" style="font-size:.9rem;">
+                Uploading a new file will replace the current one for this application.
+              </p>
+              {% else %}
+              <p class="mb-2"><strong>No document on file for this application.</strong></p>
+              <p class="text-muted" style="font-size:.9rem;">
+                You can upload a supporting document (transcript, essay, etc.) below.
+              </p>
+              {% endif %}
+
+              <form id="documentForm{{application.id}}">
+                <div class="mb-3">
+                  <label for="documentFile{{application.id}}" class="form-label">Select File</label>
+                  <input class="form-control" type="file" id="documentFile{{application.id}}" name="document">
+                </div>
+
+                <div class="mb-3">
+                  <label for="documentType{{application.id}}" class="form-label">Document Type</label>
+                  <select class="form-select" id="documentType{{application.id}}" name="document_type">
+                    <option value="transcript">Transcript</option>
+                    <option value="essay">Essay</option>
+                    <option value="recommendation">Recommendation</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </form>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-ua-blue" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-ua-red"
+                onclick="UploadDocument('{{ application.id }}', '{{ document.id if document else '' }}')">
+                Save Document
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('#scholarship-table').DataTable({
+      // Enable searching, sorting, and pagination (enabled by default)
+      "paging": true,
+      "searching": true,
+      "ordering": true,
+      "order": [[1, "asc"]], // Default sort by Scholarship Name (column index 1)
+      "columnDefs": [
+        { "orderable": false, "targets": 0 },
+        { "orderable": false, "targets": -1 }
+      ]
+    });
+  });
+
+  function DeleteApplication(application_id) {
+    fetch(`/api/applications/${application_id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data)
+        window.location.href = "/student/applications";
+      })
+      .catch(error => console.error("Error:", error));
+  }
+
+  function UploadDocument(applicationId, existingDocumentId) {
+    const fileInput = document.getElementById(`documentFile${applicationId}`);
+    const typeSelect = document.getElementById(`documentType${applicationId}`);
+
+    if (!fileInput.files.length) {
+      alert("Please choose a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("document", fileInput.files[0]);
+    formData.append("application_id", applicationId);
+    formData.append("document_type", typeSelect.value);
+
+    // Helper to actually POST the new document
+    const doUpload = () => {
+      fetch(`/api/documents`, {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to upload document");
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Document upload success:", data);
+          location.reload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("There was an error uploading the document.");
+        });
+    };
+
+    // If there is an existing document, delete it first
+    if (existingDocumentId && existingDocumentId !== "None" && existingDocumentId !== "") {
+      if (!confirm("This will replace your existing document. Continue?")) {
+        return;
+      }
+
+      fetch(`/api/documents/${existingDocumentId}`, {
+        method: 'DELETE'
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Failed to delete existing document");
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log("Existing document deleted:", data);
+          // Now upload the new document
+          doUpload();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          alert("There was an error deleting the existing document.");
+        });
+    } else {
+      // No existing document, just upload
+      doUpload();
+    }
+  }
+
+  function DeleteDocument(documentId, applicationId) {
+    if (!confirm("Are you sure you want to delete this document? This cannot be undone.")) {
+      return;
+    }
+
+    fetch(`/api/documents/${documentId}`, {
+      method: 'DELETE'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to delete document");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Document delete success:", data);
+        location.reload();
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("There was an error deleting the document.");
+      });
+  }
+
+  function UpdateApplication(applicationForm, application_id) {
+    const details = {};
+    const formElements = document.getElementById(applicationForm).elements;
+
+    for (let element of formElements) {
+      if (element.name && element.type !== 'button') {
+        details[element.name] = element.value;
+      }
+    }
+
+    console.log(JSON.stringify(details))
+
+    fetch(`/api/applications/` + application_id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(details)
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data)
+        location.reload();
+      })
+      .catch(error => console.error("Error:", error));
+  }
+</script>
+{% endblock %}

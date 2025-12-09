@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+        <div class="card shadow p-3">
+            <div class="card-body">
+                <form method="POST" class="row g-3 needs-validation" id="SignUpForm">
+                    <div class="pt-4 pb-2">
+                        <h3 class="card-title text-center pb-0 fs-4" id="SignUpTitle" tabindex="-1">Sign Up</h3>
+                        <p class="text-center small">Enter your personal details to create account</p>
+                    </div>
+                    <div id="error_message" class="alert alert-danger alert-dismissible fade show d-none" role="alert" tabindex="-1">
+                    </div>
+                    <div id="SignUpPage1" class="row g-2" style="margin-top:0px; margin-left:0px;">
+                        <div class="form-group mb-3">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required=""/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required=""/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="firstName">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter first name" required=""/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter last name" required=""/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="pwd">Password</label>
+                            <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Enter password" required=""/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="pwdConf">Password (Confirm)</label>
+                            <input type="password" class="form-control" id="pwdConf" name="pwdConf" placeholder="Confirm password" required=""/>
+                        </div>
+                    </div>
+                    <div id="SignUpPage2" class="row g-2 d-none" style="margin-top:0px; margin-left:0px;">
+                        <div class="form-group mb-3">
+                            <label for="security_question_1">Security Question 1</label>
+                            <select name="security_question_1" id="security_question_1" class="form-control" required="">
+                                <option value="" disabled selected>-- Select a question --</option>
+                                {% for question in security_questions %}
+                                    <option value="{{ question.id }}">{{ question.question_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="security_answer_1">Answer</label>
+                            <input type="text" class="form-control" name="security_answer_1" placeholder="Enter Answer" required="">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="security_question_2">Security Question 2</label>
+                            <select name="security_question_2" id="security_question_2" class="form-control" required="">
+                                <option value="" disabled selected>-- Select a question --</option>
+                                {% for question in security_questions %}
+                                    <option value="{{ question.id }}">{{ question.question_text }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="security_answer_2">Answer</label>
+                            <input type="text" class="form-control" name="security_answer_2" placeholder="Enter Answer" required="">
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="netID">Net ID</label>
+                            <input type="text" class="form-control" id="netID" name="netID" placeholder="Enter Net ID"/>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="phoneNum">Phone Number</label>
+                            <input type="tel" class="form-control" id="phonenum" name="phonenum" placeholder="Enter Phone Number" required=""/>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:20px;">
+                        <button class="btn btn-ua-red" style="flex:1" id="nextButton" type="button">Next</button>
+                        <button class="btn btn-ua-blue d-none" style="flex:1" id="previousButton" type="button">Previous</button>
+                        <button class="btn btn-ua-red d-none" style="flex:1" id="submitButton" type="submit">Submit</button>
+                    </div>
+                    <p class="small mb-0" id="LogInLink">Already have an account? 
+                        <a href="login">Log in</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     document.addEventListener("DOMContentLoaded", function () {
+        let question1 = document.getElementById("security_question_1");
+        let question2 = document.getElementById("security_question_2");
+
+        function updateOptions() {
+            let selected1 = question1.value;
+            let selected2 = question2.value;
+
+            // Reset all options to be enabled
+            let allOptions = document.querySelectorAll("#security_question_1 option, #security_question_2 option");
+            allOptions.forEach(option => {
+                option.hidden = false;  // Ensure all options are visible first
+            });
+
+            // Disable selected option in the other dropdown
+            if (selected1) {
+                document.querySelector(`#security_question_2 option[value="${selected1}"]`).hidden = true;
+            }
+            if (selected2) {
+                document.querySelector(`#security_question_1 option[value="${selected2}"]`).hidden = true;
+            }
+        }
+
+        // Run when question1 or question2 changes
+        question1.addEventListener("change", function () {
+            updateOptions();
+        });
+
+        question2.addEventListener("change", function () {
+            updateOptions();
+        });
+
+        updateOptions(); // Run on page load
+    }); 
+    document.getElementById("phonenum").addEventListener("input", function (event) {
+        let input = event.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+
+        if (input.length > 3 && input.length <= 6) {
+            input = input.slice(0, 3) + "-" + input.slice(3);
+        } 
+        else if (input.length > 6) {
+            input = input.slice(0, 3) + "-" + input.slice(3, 6) + "-" + input.slice(6, 10);
+        }
+
+        event.target.value = input;
+    });  
+
+    document.getElementById("nextButton").addEventListener("click", function (event) {
+        let password = document.getElementById("pwd").value;
+        let confirmPassword = document.getElementById("pwdConf").value;
+        let SignUpPage1 = document.getElementById("SignUpPage1");
+        let SignUpPage2 = document.getElementById("SignUpPage2");
+        let nextButton = document.getElementById("nextButton");
+        let previousButton = document.getElementById("previousButton");
+        let submitButton = document.getElementById("submitButton");
+        let errorMessage = document.getElementById("error_message");
+        let LogInLink = document.getElementById("LogInLink");
+        let SignUpTitle = document.getElementById("SignUpTitle");
+        
+        let firstPageFields = document.querySelectorAll("#SignUpPage1 input[required]"); 
+
+        let isValid = true;
+
+        for (let field of firstPageFields) {
+            if (!field.checkValidity()) {
+                field.reportValidity(); 
+                isValid = false;
+                break;  // Break the loop on first invalid field
+            }
+        }
+
+        if(password !== confirmPassword) {
+            errorMessage.innerText = 'Passwords do not match.'
+            errorMessage.classList.remove("d-none");// Show error message
+            SignUpTitle.focus();
+        } 
+        else if(isValid) {
+            SignUpPage2.classList.remove("d-none"); 
+            previousButton.classList.remove("d-none");
+            submitButton.classList.remove("d-none");
+            SignUpPage1.classList.add("d-none");
+            nextButton.classList.add("d-none");
+            errorMessage.classList.add("d-none"); // Hide error message if correct
+            LogInLink.classList.add("d-none");
+            SignUpTitle.focus();
+        }
+    });
+    document.getElementById("previousButton").addEventListener("click", function (event) {
+
+        let SignUpPage1 = document.getElementById("SignUpPage1");
+        let SignUpPage2 = document.getElementById("SignUpPage2");
+        let nextButton = document.getElementById("nextButton");
+        let previousButton = document.getElementById("previousButton");
+        let submitButton = document.getElementById("submitButton");
+        let LogInLink = document.getElementById("LogInLink");
+
+        SignUpPage2.classList.add("d-none"); 
+        previousButton.classList.add("d-none");
+        submitButton.classList.add("d-none");
+        SignUpPage1.classList.remove("d-none");
+        nextButton.classList.remove("d-none");
+        LogInLink.classList.remove("d-none");
+    
+    });
+</script>
+{% endblock %}

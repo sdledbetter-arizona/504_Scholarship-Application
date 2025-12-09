@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Reset Password{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center ">
+        <div class="card shadow p-3">
+            <div class="card-body">
+                <form method="POST" class="row g-2 needs-validation">
+                    <div class="pt-4 pb-2">
+                        <h3 class="card-title text-center pb-0 fs-4">Reset Your Password</h3>
+                        <p class="text-center small">Enter code &amp; passwords to apply changes.</p>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="verCode">Verification Code</label>
+                        <input type="text" class="form-control" id="verCode" name="verCode" placeholder="Enter code"
+                            required="" />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="pwd">New Password</label>
+                        <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Enter password"
+                            required="" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="pwdConf">New Password (Confirm)</label>
+                        <input type="password" class="form-control" id="pwdConf" name="pwdConf"
+                            placeholder="Enter password" required="" />
+                    </div>
+                    <button type="submit" class="btn btn-ua-red">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

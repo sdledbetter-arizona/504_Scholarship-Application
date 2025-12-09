@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Admin - Overview{% endblock %}
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">Overview</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active">Admin</li>
+    </ol>
+</nav>
+
+        <div class="row mt-4">
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text">Total Users: {{ total_users }}</p>
+                        <a href="/admin/users" class="btn btn-ua-red">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Requests</h5>
+                        <p class="card-text">Open Requests: {{ open_requests }}</p>
+                        <a href="/admin/requests" class="btn btn-ua-red">View Requests</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Scholarships</h5>
+                        <p class="card-text">Available Scholarships: {{ total_scholarships }}</p>
+                        <a href="/admin/scholarships" class="btn btn-ua-red">Manage Scholarships</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Applications</h5>
+                        <p class="card-text">Total Applications: {{ total_applications }}</p>
+                        <a href="/admin/applications" class="btn btn-ua-red">View Applications</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+       
+
+{% endblock %}

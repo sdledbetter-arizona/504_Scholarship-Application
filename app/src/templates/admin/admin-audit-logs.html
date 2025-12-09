@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">Audit Logs</h1>
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('views.home') }}">Admin</a></li>
+      <li class="breadcrumb-item active">Audit Logs</li>
+    </ol>
+  </nav>
+
+  {% if logs %}
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th scope="col">Timestamp</th>
+                <th scope="col">User</th>
+                <th scope="col">Action</th>
+                <th scope="col">Entity</th>
+                <th scope="col">Field</th>
+                <th scope="col">Old Value</th>
+                <th scope="col">New Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in logs %}
+              <tr>
+                <td class="text-muted small">
+                  {{ log.created_at.strftime('%b %d, %Y %I:%M %p') }}
+                </td>
+                <td class="small">
+                  {% if log.user %}
+                    {{ log.user.first_name }} {{ log.user.last_name }}
+                    <br>
+                    <span class="text-muted">{{ log.user.email }}</span>
+                  {% else %}
+                    <span class="text-muted">System</span>
+                  {% endif %}
+                </td>
+                <td class="small">
+                  {{ log.action }}
+                </td>
+                <td class="small">
+                  {{ log.entity_type }} #{{ log.entity_id }}
+                </td>
+                <td class="small">
+                  {% if log.field_name %}
+                    <code>{{ log.field_name }}</code>
+                  {% else %}
+                    <span class="text-muted">N/A</span>
+                  {% endif %}
+                </td>
+                <td class="small text-wrap" style="max-width: 250px;">
+                  {% if log.old_value %}
+                    <span class="text-muted">{{ log.old_value }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+                <td class="small text-wrap" style="max-width: 250px;">
+                  {% if log.new_value %}
+                    <span>{{ log.new_value }}</span>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <!-- EMPTY STATE WHEN THERE ARE NO LOGS -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="mb-3">
+          <i class="bi bi-card-list text-primary" style="font-size: 2.5rem; color: #adb5bd;"></i>
+        </div>
+        <h5 class="mb-2">No audit logs yet</h5>
+        <p class="text-muted mb-0">
+          Once users start changing data in the system, those actions will be recorded
+          here for review and compliance.
+        </p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

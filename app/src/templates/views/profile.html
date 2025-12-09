@@ -1,0 +1,658 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block style %}<style>
+  .switch-list {
+    background-color: #f4f6f9;
+    padding: 5px;
+    border-radius: 10px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 0px;
+    padding: 5px;
+  }
+
+  .form-check-label {
+    margin-right: auto;
+    margin-left: 10px;
+    font-weight: 500;
+  }
+
+  .profile .profile-card img {
+    max-width: 120px;
+  }
+
+  .profile .profile-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c384e;
+    margin: 10px 0 0 0;
+  }
+
+  .profile .profile-card h3 {
+    font-size: 18px;
+  }
+
+  .profile .profile-card .social-links a {
+    font-size: 20px;
+    display: inline-block;
+    color: rgba(1, 41, 112, 0.5);
+    line-height: 0;
+    margin-right: 10px;
+    transition: 0.3s;
+  }
+
+  .profile .profile-card .social-links a:hover {
+    color: #012970;
+  }
+
+  .profile .profile-overview .row {
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+
+  .profile .profile-overview .card-title {
+    color: #012970;
+  }
+
+  .profile .profile-overview .label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+  }
+
+  .profile .profile-edit label {
+    font-weight: 600;
+    color: rgba(1, 41, 112, 0.6);
+  }
+
+  .profile .profile-edit img {
+    max-width: 120px;
+  }
+
+  .nav-tabs-bordered {
+    border-bottom: 2px solid #ebeef4;
+  }
+
+  .nav-tabs-bordered .nav-link {
+    margin-bottom: -2px;
+    border: none;
+    color: #2c384e;
+  }
+
+  .nav-tabs-bordered .nav-link:hover,
+  .nav-tabs-bordered .nav-link:focus {
+    color: var(--ua-red);
+  }
+
+  .nav-tabs-bordered .nav-link.active {
+    background-color: #fff;
+    color: var(--ua-red);
+    border-bottom: 2px solid var(--ua-red);
+  }
+
+  .card {
+    margin-bottom: 30px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+  }
+
+  .card-header,
+  .card-footer {
+    border-color: #ebeef4;
+    background-color: #fff;
+    color: #798eb3;
+    padding: 15px;
+  }
+
+  .card-title {
+    padding: 20px 0 15px 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #012970;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .card-title span {
+    color: #899bbd;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .card-body {
+    padding: 20px 20px 20px 20px;
+  }
+
+  .card-img-overlay {
+    background-color: rgba(255, 255, 255, 0.6);
+  }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">My Profile</h1>
+<nav>
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="\">Home</a></li>
+    <li class="breadcrumb-item">User</li>
+    <li class="breadcrumb-item active">{{user.first_name}} {{user.last_name}}</li>
+  </ol>
+</nav>
+
+<div class="card profile">
+  <div class="card-body">
+    <ul class="nav nav-tabs nav-tabs-bordered" role="tablist" id="profileTabs">
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" data-bs-toggle="tab" data-tab="overview" data-bs-target="#profile-overview"
+          aria-selected="true" role="tab">Overview</button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-tab="profile" data-bs-target="#profile-edit"
+          aria-selected="false" role="tab" tabindex="-1">Profile</button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-tab="changeRole" data-bs-target="#profile-change-role"
+          aria-selected="false" role="tab" tabindex="-1">Change Role</button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-tab="securityQuestions" data-bs-target="#profile-sec-quest"
+          aria-selected="false" role="tab" tabindex="-1">Security Questions</button>
+      </li>
+
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-tab="changePassword"
+          data-bs-target="#profile-change-password" aria-selected="false" role="tab" tabindex="-1">Change
+          Password</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" data-bs-toggle="tab" data-tab="deleteAccount" data-bs-target="#profile-delete-acct"
+          aria-selected="false" role="tab" tabindex="-1">Delete Account</button>
+      </li>
+
+    </ul>
+    <div class="tab-content pt-2">
+
+      <div class="tab-pane fade profile-overview active show" id="profile-overview" role="tabpanel">
+        <h5 class="card-title">About</h5>
+        <p class="small fst-italic">Sunt est soluta temporibus accusantium neque nam maiores cumque temporibus. Tempora
+          libero non est unde veniam est qui dolor. Ut sunt iure rerum quae quisquam autem eveniet perspiciatis odit.
+          Fuga sequi sed ea saepe at unde.</p>
+
+        <h5 class="card-title">Profile Details</h5>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label ">Full Name</div>
+          <div class="col-lg-9 col-md-8">FirstName + LastName</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Company</div>
+          <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Job</div>
+          <div class="col-lg-9 col-md-8">Web Designer</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Country</div>
+          <div class="col-lg-9 col-md-8">USA</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Address</div>
+          <div class="col-lg-9 col-md-8">A108 Adam Street, New York, NY 535022</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Phone</div>
+          <div class="col-lg-9 col-md-8">(436) 486-3538 x29071</div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-3 col-md-4 label">Email</div>
+          <div class="col-lg-9 col-md-8">k.anderson@example.com</div>
+        </div>
+
+      </div>
+
+      <div class="tab-pane fade profile-edit pt-3" id="profile-edit" role="tabpanel">
+
+        <form method="post" id="profileForm">
+          <div class="row">
+            <div class="mb-3 col-3">
+              <label class="form-label" for="preferred_pronoun">Preferred Pronoun</label>
+              <div>
+                <input name="preferred_pronoun" type="text" class="form-control" id="preferred_pronoun"
+                  value="{{ profile.preferred_pronoun }}">
+              </div>
+            </div>
+
+            <div class="mb-3 col-3">
+              <label for="student_id" class="form-label">Student ID</label>
+              <div>
+                <input name="student_id" type="text" class="form-control" id="student_id"
+                  value="{{ profile.student_id }}">
+              </div>
+            </div>
+
+            <div class="mb-3 col-3">
+              <label for="major" class="form-label">Major</label>
+              <div>
+                <input name="major" type="text" class="form-control" id="major" value="{{ profile.major }}">
+              </div>
+            </div>
+
+            <div class="mb-3 col-3">
+              <label for="minor" class="form-label">Minor</label>
+              <div>
+                <input name="minor" type="text" class="form-control" id="minor" value="{{ profile.minor }}">
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Personal Details -->
+          <div class="row">
+            <div class="mb-3 col-4">
+              <label for="cumulative_gpa" class="form-label">Cumulative GPA</label>
+              <div>
+                <input name="cumulative_gpa" id="cumulative_gpa" type="text" class="form-control" inputmode="decimal"
+                  value="{{ profile.cumulative_gpa }}" placeholder="None">
+              </div>
+            </div>
+
+            <!-- Address Details -->
+            <div class="mb-3 col-4">
+              <label for="current_year" class="form-label">Current Year</label>
+              <div>
+                <select name="current_year" type="text" class="form-control" id="current_year">
+                  <option value="None">None</option>
+                  <option value="Freshman">Freshman</option>
+                  <option value="Sophomore">Sophomore</option>
+                  <option value="Junior">Junior</option>
+                  <option value="Senior">Senior</option>
+                  <option value="Graduate">Graduate</option>
+                </select>
+              </div>
+            </div>
+            <div class="mb-3 col-4">
+              <label for="ethnicity" class="form-label">Ethnicity</label>
+              <div>
+                <select name="ethnicity" type="text" class="form-control" id="ethnicity">
+                  <option value="None">None</option>
+                  <option value="Caucasian">Caucasian</option>
+                  <option value="Hispanic">Hispanic</option>
+                  <option value="Black">Black</option>
+                  <option value="European">European</option>
+                  <option value="Asian">Asian</option>
+                  <option value="Indian">Indian</option>
+                  <option value="American Indian">American Indian</option>
+                  <option value="Arabic/Middle Eastern">Arabic/Middle Eastern</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <label for="personal_statement_essay" class="form-label">Personal Statement Essay</label>
+            <div class="col-md-12">
+              <textarea name="personal_statement_essay" type="text" class="form-control"
+                id="personal_statement_essay">{{ profile.personal_statement_essay }}</textarea>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label for="work_experience" class="form-label">Work Experience</label>
+            <div class="col-md-12">
+              <textarea name="work_experience" type="text" class="form-control"
+                id="work_experience">{{ profile.work_experience }}</textarea>
+            </div>
+          </div>
+
+          <input class="form-control mb-3 d-none" value="EditProfile" name="ProfileFormName">
+
+          <div class="row justify-content-evenly text-center">
+            <button type="button" id="profileCancelButton" class="btn btn-danger d-none col col-2">Cancel</button>
+            <button type="button" id="toggleButton" class="btn btn-primary col col-2">Edit Profile</button>
+          </div>
+        </form>
+
+      </div>
+
+
+      <div class="tab-pane fade profile-edit" id="profile-change-role" role="tabpanel">
+
+        <h5 class="card-title">Please submit the role you would like to have.</h5>
+        <form method="post">
+          <div class="switch-list">
+            <div class="form-check form-switch">
+              <label class="form-check-label" for="student">Student</label>
+              <div class="col-md-8 col-lg-9">
+                <input class="form-check-input" name="options" type="checkbox" id="student"
+                  onclick="toggleSwitches(this);" value="Student">
+              </div>
+            </div>
+            <div class="form-check form-switch">
+              <label class="form-check-label" for="scholarshipAdmin">Scholarship Admin</label>
+
+              <div class="col-md-8 col-lg-9">
+                <input class="form-check-input" name="options" type="checkbox" id="scholarshipAdmin"
+                  onclick="toggleSwitches(this);" value="Scholarship Admin">
+              </div>
+            </div>
+            <div class="form-check form-switch">
+              <label class="form-check-label" for="appReviewer">Application Reviewer</label>
+
+              <div class="col-md-8 col-lg-9">
+                <input class="form-check-input" name="options" type="checkbox" id="appReviewer"
+                  onclick="toggleSwitches(this);" value="Application Reviewer">
+              </div>
+            </div>
+            <div class="form-check form-switch">
+              <label class="form-check-label" for="reportAdmin">Scholarship Donor</label>
+
+              <div class="col-md-8 col-lg-9">
+                <input class="form-check-input" name="options" type="checkbox" id="reportAdmin"
+                  onclick="toggleSwitches(this);" value="Scholarship Donor">
+              </div>
+            </div>
+          </div>
+
+          <input class="form-control mb-3 d-none" value="ChangeRole" name="ProfileFormName">
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary col col-2" id="submitRoleRequest">Submit Request</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-pane fade pt-3 profile-edit " id="profile-sec-quest" role="tabpanel">
+        <form method="post">
+          <div class="mb-3 profile-edit">
+            <label for="sec-quest-1" class="form-label">Security Question 1</label>
+            <select class="form-select mb-3" required="" aria-label="Security Question 1" id="sec-quest-1"
+              name="sec-quest-1">
+              {% for question in sec_quests %}
+              <option value="{{question.id}}">{{question.question_text}}</option>
+              {% endfor %}
+            </select>
+            <label for="sec-quest-1-answer" class="form-label">Answer #1</label>
+            <input class="form-control" required="" id="sec-quest-1-answer" name="sec-quest-1-answer">
+          </div>
+          <label for="sec-quest-2" class="form-label">Security Question 2</label>
+          <select class="form-select mb-3" aria-label="Security Question 2" required="" id="sec-quest-2"
+            name="sec-quest-2">
+
+            {% for question in sec_quests %}
+            <option value="{{question.id}}">{{question.question_text}}</option>
+            {% endfor %}
+          </select>
+          <label for="sec-quest-2-answer" class="form-label">Answer #2</label>
+          <input class="form-control mb-3" required="" id="sec-quest-2-answer" name="sec-quest-2-answer">
+
+          <input class="form-control mb-3 d-none" value="SecurityQuestions" name="ProfileFormName">
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary col col-2">Save Changes</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="tab-pane fade pt-3" id="profile-change-password" role="tabpanel">
+
+        <form method="post">
+
+          <div class="row mb-3 profile-edit">
+            <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+            <div class="col-md-8 col-lg-9">
+              <input name="currentPassword" type="password" class="form-control" required="" id="currentPassword"
+                data-keeper-lock-id="k-mk2hb095p2">
+            </div>
+          </div>
+
+          <div class="row mb-3 profile-edit">
+            <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+            <div class="col-md-8 col-lg-9">
+              <input name="newPassword" type="password" class="form-control" required="" id="newPassword"
+                data-keeper-lock-id="k-nisbign17oq">
+            </div>
+          </div>
+
+          <div class="row mb-3 profile-edit">
+            <label for="newPasswordConf" class="col-md-4 col-lg-3 col-form-label">Re-enter New Password</label>
+            <div class="col-md-8 col-lg-9">
+              <input name="newPasswordConf" type="password" class="form-control" required="" id="newPasswordConf"
+                data-keeper-lock-id="k-n0ds76bewt">
+            </div>
+          </div>
+
+          <input class="form-control mb-3 d-none" value="ChangePassword" name="ProfileFormName">
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary col col-2">Change Password</button>
+          </div>
+        </form>
+
+      </div>
+
+      <div class="tab-pane fade pt-3" id="profile-delete-acct" role="tabpanel">
+
+        <form method="POST">
+
+          <div class="card text-bg-danger mb-3">
+
+            <div class="card-body">
+              <p class="card-text">Once the account deletion process is initiated, it cannot be reversed. You will no
+                longer have access to your account or associated features.</p>
+            </div>
+          </div>
+
+          <div class="row ">
+            <label for="del-acct-pwd" class="col col-form-label">If you're still sure you want to delete your account,
+              enter your password and click the button to delete your account and all your data.</label>
+            <div class="col">
+              <input name="del-acct-pwd" type="password" class="form-control" required="" id="del-acct-pwd"
+                data-keeper-lock-id="k-n0ds76bewt">
+            </div>
+          </div>
+
+          <input class="form-control mb-3 d-none" value="DeleteAccount" name="ProfileFormName">
+
+          <div class="text-center">
+            <button type="submit" class="btn btn-danger col col-2">Delete Account</button>
+          </div>
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<script>
+
+  function toggleSwitches(selectedSwitch) {
+    const switches = document.querySelectorAll('input[name="options"]');
+    const submitButton = document.getElementById('submitRoleRequest');
+
+    switches.forEach(sw => {
+      if (sw !== selectedSwitch) {
+        sw.checked = false;
+      }
+    });
+
+    // Ensure at least one switch is always selected
+    const anyChecked = Array.from(switches).some(sw => sw.checked);
+
+    if (!anyChecked) {
+      selectedSwitch.checked = true;
+    }
+
+    if (selectedSwitch.value == '{{current_user.user_type}}') {
+      submitButton.disabled = true;
+    }
+
+    else {
+      submitButton.disabled = false;
+    }
+  }
+
+  window.onload = function () {
+    const switches = document.querySelectorAll('input[name="options"]');
+    const submitButton = document.getElementById('submitRoleRequest');
+    const selectEthnicityElement = document.getElementById('ethnicity');
+    const selectCurrentYearElement = document.getElementById('current_year');
+
+    selectEthnicityElement.value = '{{profile.ethnicity}}';
+    selectCurrentYearElement.value = '{{profile.current_year}}';
+
+    submitButton.disabled = true;
+
+    switches.forEach(sw => {
+      if (sw.value === '{{current_user.user_type}}') {
+        sw.checked = true;
+      }
+    });
+
+
+  };
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedTab = urlParams.get("tab");
+
+    const targetTab = document.querySelector(`[data-tab="${selectedTab}"]`);
+    const targetPaneId = targetTab.getAttribute("data-bs-target");
+    const forms = document.querySelectorAll("form"); // Select all forms on the page
+
+    if (selectedTab) {
+
+
+      document.querySelector(".nav-link.active").classList.remove("active");
+      document.querySelector(".tab-pane.active").classList.remove("show", "active");
+
+      targetTab.classList.add("active");
+      document.querySelector(targetPaneId).classList.add("show", "active");
+    }
+
+    const tabs = document.querySelectorAll(".nav-link");
+    let profileForm = document.getElementById("profileForm");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+
+        const tabName = tab.getAttribute("data-tab");
+        forms.forEach(form => {
+          form.reset();
+        });
+
+        let toggleButton = document.getElementById("toggleButton");
+        let profileCancelButton = document.getElementById("profileCancelButton");
+
+        const selectEthnicityElement = document.getElementById('ethnicity');
+        const selectCurrentYearElement = document.getElementById('current_year');
+
+        selectEthnicityElement.value = '{{profile.ethnicity}}';
+        selectCurrentYearElement.value = '{{profile.current_year}}';
+
+        let profileFields = profileForm.querySelectorAll("input, select, textarea");
+        profileFields.forEach(field => field.setAttribute("disabled", "true"));
+        toggleButton.innerText = "Edit Profile";
+        profileCancelButton.classList.add("d-none");
+
+        const switches = document.querySelectorAll('input[name="options"]');
+        switches.forEach(sw => {
+          if (sw.value === '{{current_user.user_type}}') {
+            sw.checked = true;
+          }
+        });
+
+        const currentUrl = window.location.href.split('?')[0];
+        const newUrl = `${currentUrl}?tab=${tabName}`;
+        window.history.pushState(null, null, newUrl);
+
+
+
+      });
+    });
+
+    let toggleButton = document.getElementById("toggleButton");
+    let profileCancelButton = document.getElementById("profileCancelButton");
+
+
+    if (profileForm && toggleButton && profileCancelButton) {
+      let profileFields = profileForm.querySelectorAll("input, select, textarea");
+
+      profileFields.forEach(field => {
+        field.classList.add("form-control");
+        field.setAttribute("disabled", "true");
+      });
+
+      toggleButton.addEventListener("click", function (event) {
+        if (toggleButton.innerText === "Edit Profile") {
+
+          profileFields.forEach(field => field.removeAttribute("disabled"));
+          toggleButton.innerText = "Save Changes";
+          profileCancelButton.classList.remove("d-none");
+        } else {
+          profileForm.submit();
+        }
+      });
+      profileCancelButton.addEventListener("click", function (event) {
+        profileFields.forEach(field => field.setAttribute("disabled", "true"));
+        toggleButton.innerText = "Edit Profile";
+        profileCancelButton.classList.add("d-none");
+        profileForm.reset();
+
+
+      });
+    }
+
+    document.getElementById("cumulative_gpa").addEventListener("input", function (e) {
+      const input = this;
+
+      // Save cursor position
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+
+      let value = input.value;
+
+      // Remove invalid characters
+      let cleaned = value.replace(/[^0-9.]/g, "");
+
+      // Allow only one decimal point
+      const parts = cleaned.split(".");
+      if (parts.length > 2) {
+        cleaned = parts[0] + "." + parts.slice(1).join("");
+      }
+
+      // Update value only if changed
+      if (cleaned !== value) {
+        input.value = cleaned;
+
+        // Calculate new cursor position
+        const diff = value.length - cleaned.length;
+        const newPos = start - diff;
+
+        // Restore cursor position safely
+        input.setSelectionRange(newPos, newPos);
+      }
+    });
+
+  });
+
+</script>
+{% endblock %}

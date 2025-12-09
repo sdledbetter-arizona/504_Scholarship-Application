@@ -1,0 +1,530 @@
+{% extends "base.html" %}
+{% block title %}Donor - Scholarships{% endblock %}
+
+{% block style %}
+<style>
+  .tags-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #0d6efd;
+    color: white;
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 15px;
+    font-size: 14px;
+  }
+
+  .tag .remove {
+    margin-left: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+  }
+
+  .tags-input-container input {
+    border: none;
+    flex-grow: 1;
+    outline: none;
+    padding: 5px;
+    font-size: 14px;
+    background-color: transparent;
+  }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="row justify-content-between align-items-center">
+  <div class="col-auto">
+    <h1 style="font-size: 24px;margin-bottom:0px;font-weight: 600;color: #012970;">Scholarships</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Donor</a></li>
+        <li class="breadcrumb-item active">Scholarships</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="col-auto">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scholarshipModal">
+      <i class="bi bi-file-earmark-plus"></i> Request New Scholarship
+    </button>
+  </div>
+</div>
+<table class="table table-striped table-hover shadow mb-3" id="scholarshipTable">
+  <thead class="table-dark">
+    <tr>
+      <th scope="col">Scholarship Name</th>
+      <th scope="col">Amount</th>
+      <th scope="col">Available Scholarships</th>
+      <th scope="col">Application Deadline</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for scholarship in scholarships %}
+    <tr>
+      <td>{{ scholarship.name }}</td>
+      <td>${{ "{:,.0f}".format(scholarship.amount) }}</td>
+      <td>{{ scholarship.scholarships_available }}</td>
+      <td>{{ scholarship.application_deadline.strftime('%Y-%m-%d') }}</td>
+      <td>
+        <button class="btn btn-primary btn-sm"
+          onclick="saveValueAndNavigate('{{scholarship.name}}')">Applications</button>
+        <button class="btn btn-secondary btn-sm" data-bs-toggle="offcanvas"
+          data-bs-target="#editScholarshipOffcanvas{{scholarship.id}}"
+          aria-controls="editScholarshipOffcanvas{{scholarship.id}}">Edit</button>
+        <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+          data-bs-target="#DeleteScholarshipModal{{scholarship.id}}">Delete</button>
+      </td>
+    </tr>
+    <!-- Offcanvas -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="editScholarshipOffcanvas{{scholarship.id}}"
+      aria-labelledby="editScholarshipOffcanvasLabel">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="editScholarshipOffcanvasLabel">Request to Update Scholarship</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        <form id="scholarshipForm{{scholarship.id}}">
+          <div class="mb-3">
+            <label for="scholarshipName" class="form-label">Scholarship Name</label>
+            <input type="text" class="form-control" id="scholarshipName" name="name" value="{{scholarship.name}}"
+              required>
+          </div>
+          <div class="mb-3">
+            <label for="scholarshipDescription" class="form-label">Description</label>
+            <textarea type="text" class="form-control" id="scholarshipDescription" name="description" rows="3"
+              required>{{scholarship.description}}</textarea>
+          </div>
+          <div class="mb-3">
+            <label for="scholarshipAmount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="scholarshipAmount" value="{{scholarship.amount}}"
+              name="amount" step="0.01" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="scholarshipsAvailable" class="form-label">Available Scholarships</label>
+            <input type="number" class="form-control" id="scholarshipsAvailable"
+              value="{{scholarship.scholarships_available}}" name="scholarships_available" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="requiredGPA" class="form-label">Required GPA</label>
+            <input type="text" class="form-control gpa-input" id="requiredGPA" name="required_gpa" inputmode="decimal"
+              value="{{scholarship.required_gpa or ''}}">
+          </div>
+          <div class="mb-3">
+            <label for="required_year{{scholarship.id}}" class="form-label">Required Year</label>
+            <select name="required_year" class="form-control" id="required_year{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_year=="None" %}selected{% endif %}>None</option>
+              <option value="Freshman" {% if scholarship.required_year=="Freshman" %}selected{% endif %}>Freshman
+              </option>
+              <option value="Sophomore" {% if scholarship.required_year=="Sophomore" %}selected{% endif %}>Sophomore
+              </option>
+              <option value="Junior" {% if scholarship.required_year=="Junior" %}selected{% endif %}>Junior</option>
+              <option value="Senior" {% if scholarship.required_year=="Senior" %}selected{% endif %}>Senior</option>
+              <option value="Graduate" {% if scholarship.required_year=="Graduate" %}selected{% endif %}>Graduate
+              </option>
+            </select>
+          </div>
+
+          <!-- Required Ethnicity -->
+          <div class="mb-3">
+            <label for="required_ethnicity{{scholarship.id}}" class="form-label">Required Ethnicity</label>
+            <select name="required_ethnicity" class="form-control" id="required_ethnicity{{scholarship.id}}">
+              <option value="None" {% if scholarship.required_ethnicity=="None" %}selected{% endif %}>None</option>
+              <option value="Caucasian" {% if scholarship.required_ethnicity=="Caucasian" %}selected{% endif %}>
+                Caucasian</option>
+              <option value="Hispanic" {% if scholarship.required_ethnicity=="Hispanic" %}selected{% endif %}>Hispanic
+              </option>
+              <option value="Black" {% if scholarship.required_ethnicity=="Black" %}selected{% endif %}>Black</option>
+              <option value="European" {% if scholarship.required_ethnicity=="European" %}selected{% endif %}>European
+              </option>
+              <option value="Asian" {% if scholarship.required_ethnicity=="Asian" %}selected{% endif %}>Asian</option>
+              <option value="Indian" {% if scholarship.required_ethnicity=="Indian" %}selected{% endif %}>Indian
+              </option>
+              <option value="American Indian" {% if scholarship.required_ethnicity=="American Indian" %}selected{% endif
+                %}>American Indian</option>
+              <option value="Arabic/Middle Eastern" {% if scholarship.required_ethnicity=="Arabic/Middle Eastern"
+                %}selected{% endif %}>Arabic/Middle Eastern</option>
+              <option value="Other" {% if scholarship.required_ethnicity=="Other" %}selected{% endif %}>Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="applicationDeadline" class="form-label">Application Deadline</label>
+            <input type="date" class="form-control" id="applicationDeadline"
+              value="{{scholarship.application_deadline}}" name="application_deadline" required>
+          </div>
+          <div class="mb-3">
+            <label for="editeligibleMajors{{scholarship.id}}" class="form-label">Eligible Majors</label>
+            <div class="tags-input-container" id="edittagsInputContainer{{scholarship.id}}">
+              <input type="text" id="edittagsInput{{scholarship.id}}" placeholder="Type a major and press Enter">
+            </div>
+            <input type="hidden" name="eligible_majors" id="editeligibleMajors{{scholarship.id}}">
+          </div>
+          <div class="mb-3">
+            <label for="editeligibleMinors{{scholarship.id}}" class="form-label">Eligible Minors</label>
+            <div class="tags-input-container" id="editminortagsInputContainer{{scholarship.id}}">
+              <input type="text" id="editminortagsInput{{scholarship.id}}" placeholder="Type a minor and press Enter">
+            </div>
+            <input type="hidden" name="eligible_minors" id="editeligibleMinors{{scholarship.id}}">
+          </div>
+          <div class="mb-3">
+            <label for="otherRequirements" class="form-label">Other Requirements</label>
+            <textarea class="form-control" id="otherRequirements" name="other_requirements"
+              value="{{scholarship.other_requirements}}" rows="3"></textarea>
+          </div>
+          <button type="button" onclick="UpdateScholarship('scholarshipForm{{scholarship.id}}', '{{scholarship.id}}')"
+            class="btn btn-primary">Submit Request</button>
+        </form>
+      </div>
+    </div>
+    <div class="modal fade" id="DeleteScholarshipModal{{scholarship.id}}" tabindex="-1"
+      aria-labelledby="DeleteScholarshipModal{{scholarship.id}}" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-dark-subtle">
+            <i class="bi-info-circle-fill" style="font-size:25px;"></i>
+            <h1 class="modal-title fs-5" id="DeleteUserModalModalLabel"><strong>&nbsp;Request to Delete
+                Scholarship</strong></h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Once the scholarship deletion process is initiated, it cannot be reversed. All applications for this
+            scholarship will be deleted.
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-danger"
+              onclick="DeleteScholarship('scholarshipForm{{scholarship.id}}', '{{scholarship.id}}')">Submit
+              Request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="modal fade" id="scholarshipModal" tabindex="-1" aria-labelledby="scholarshipModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="scholarshipModalLabel">Request a New Scholarship to be Created</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="name" class="form-label">Scholarship Name</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="Enter scholarship name" required>
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea type="text" class="form-control" id="description" name="description" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="amount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="amount" name="amount" placeholder="Enter amount" step="0.01"
+              min="0" required>
+          </div>
+          <input type="text" class="form-control-plaintext" id="donor_name" name="donor_name"
+            value="{{current_user.first_name}} {{current_user.last_name}}" hidden readonly>
+          <input type="text" class="form-control-plaintext" id="donor_phone" name="donor_phone"
+            value="{{current_user.phone_num}}" hidden readonly>
+          <input type="text" class="form-control-plaintext" id="donor_email" name="donor_email"
+            value="{{current_user.email}}" hidden readonly>
+
+          <div class="mb-3">
+            <label for="scholarshipsAvailable" class="form-label">Scholarships Available</label>
+            <input type="number" class="form-control" id="scholarshipsAvailable" name="scholarships_available"
+              placeholder="Enter number of scholarships available" min="1" required>
+          </div>
+          <div class="mb-3">
+            <label for="eligibleMajors" class="form-label">Eligible Majors</label>
+            <div class="tags-input-container" id="tagsInputContainer">
+              <input type="text" id="tagsInput" placeholder="Type a major and press Enter">
+            </div>
+            <input type="hidden" name="eligible_majors" id="eligibleMajors">
+          </div>
+          <div class="mb-3">
+            <label for="eligibleMinors" class="form-label">Eligible Minors</label>
+            <div class="tags-input-container" id="minortagsInputContainer">
+              <input type="text" id="minortagsInput" placeholder="Type a minor and press Enter">
+            </div>
+            <input type="hidden" name="eligible_minors" id="eligibleMinors">
+          </div>
+          <div class="mb-3">
+            <label for="requiredGPA" class="form-label">Required GPA</label>
+            <input type="text" class="form-control gpa-input" id="requiredGPA" name="required_gpa"
+              placeholder="Enter required GPA (optional)" inputmode="decimal">
+          </div>
+          <div class="mb-3">
+            <label for="required_year" class="form-label">Required Year</label>
+            <select name="required_year" class="form-control" id="required_year">
+              <option value="">None</option>
+              <option value="Freshman">Freshman</option>
+              <option value="Sophomore">Sophomore</option>
+              <option value="Junior">Junior</option>
+              <option value="Senior">Senior</option>
+              <option value="Graduate">Graduate</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="required_ethnicity" class="form-label">Required Ethnicity</label>
+            <select name="required_ethnicity" class="form-control" id="required_ethnicity">
+              <option value="">None</option>
+              <option value="Caucasian">Caucasian</option>
+              <option value="Hispanic">Hispanic</option>
+              <option value="Black">Black</option>
+              <option value="European">European</option>
+              <option value="Asian">Asian</option>
+              <option value="Indian">Indian</option>
+              <option value="American Indian">American Indian</option>
+              <option value="Arabic/Middle Eastern">Arabic/Middle Eastern</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="applicationDeadline" class="form-label">Application Deadline</label>
+            <input type="date" class="form-control" id="applicationDeadline" name="application_deadline" required>
+          </div>
+          <div class="">
+            <label for="otherRequirements" class="form-label">Other Requirements</label>
+            <textarea class="form-control" id="otherRequirements" name="other_requirements"
+              placeholder="Enter any additional requirements (optional)" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+
+
+    const gpaInputs = document.querySelectorAll(".gpa-input");
+
+    gpaInputs.forEach(input => {
+      input.addEventListener("input", function () {
+        const field = this;
+
+        const start = field.selectionStart;
+        const end = field.selectionEnd;
+
+        let value = field.value;
+
+        // Remove invalid characters
+        let cleaned = value.replace(/[^0-9.]/g, "");
+
+        // Allow only one decimal point
+        const parts = cleaned.split(".");
+        if (parts.length > 2) {
+          cleaned = parts[0] + "." + parts.slice(1).join("");
+        }
+
+        // Update value only if changed
+        if (cleaned !== value) {
+          field.value = cleaned;
+
+          const diff = value.length - cleaned.length;
+          const newPos = start - diff;
+          field.setSelectionRange(newPos, newPos);
+        }
+      });
+    });
+
+  });
+
+
+
+  function UpdateScholarship(scholarshipForm, scholarship_id) {
+    const details = {};
+    const formElements = document.getElementById(scholarshipForm).elements;
+
+    for (let element of formElements) {
+      if (element.name && element.type !== 'button') {
+
+        details[element.name] = element.value;
+
+      }
+    }
+
+    details['scholarship_id'] = scholarship_id;
+
+    const formData = JSON.stringify({ user_id: '{{current_user.id}}', request_type: 'Update Scholarship', details: details })
+
+
+    fetch(`/api/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data)
+        location.reload();
+      })
+      .catch(error => console.error("Error:", error));
+  }
+
+  function DeleteScholarship(scholarshipForm, scholarship_id) {
+    const details = {};
+    const formElements = document.getElementById(scholarshipForm).elements;
+
+    details['scholarship_id'] = scholarship_id;
+    details['scholarship_name'] = formElements['name'].value;
+
+    const formData = JSON.stringify({ user_id: '{{current_user.id}}', request_type: 'Delete Scholarship', details: details })
+
+    fetch(`/api/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data)
+        location.reload();
+      })
+      .catch(error => console.error("Error:", error));
+  }
+
+  function initializeTagInput(inputId, containerId, hiddenInputId, placeholderText, preloadedTags = []) {
+    const containerElement = document.getElementById(containerId);
+    const hiddenInputElement = document.getElementById(hiddenInputId);
+
+    let tags = preloadedTags; // Initialize with preloaded tags if available
+
+    // Add event listener for Enter key
+    containerElement.addEventListener('keydown', (event) => {
+      if (event.target.id === inputId && event.key === 'Enter') {
+        event.preventDefault();
+
+        const tag = capitalizeWords(event.target.value.trim());
+        if (tag && !tags.includes(tag)) {
+          tags.push(tag);
+          updateTagsDisplay();
+          event.target.value = ''; // Clear input field
+        }
+      }
+    });
+
+    function updateTagsDisplay() {
+      containerElement.innerHTML = ''; // Clear the container
+
+      // Render the tags in the container
+      tags.forEach((tag) => {
+        const tagElement = document.createElement('div');
+        tagElement.className = 'tag';
+        tagElement.innerHTML = `${tag} <span class="remove">&times;</span>`;
+        tagElement.querySelector('.remove').addEventListener('click', () => removeTag(tag));
+        containerElement.appendChild(tagElement);
+      });
+
+      // Recreate the input field
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = inputId;
+      input.placeholder = placeholderText;
+      input.className = 'form-control border-0 bg-transparent';
+      containerElement.appendChild(input);
+
+      // Update hidden input with serialized tags
+      hiddenInputElement.value = JSON.stringify(tags);
+    }
+
+    function removeTag(tag) {
+      tags = tags.filter((t) => t !== tag);
+      updateTagsDisplay();
+    }
+
+    function capitalizeWords(str) {
+      return str
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    // Initialize preloaded tags
+    updateTagsDisplay();
+  }
+
+
+
+  $(document).ready(function () {
+    $('#scholarshipTable').DataTable({
+      // Enable searching, sorting, and pagination (enabled by default)
+      "paging": true,
+      "searching": true,
+      "ordering": true,
+      "order": [[0, "asc"]], // Default sort by Scholarship Name (column index 1)
+      "columnDefs": [
+        { "orderable": false, "targets": -1 } // Disable sorting on the Actions column
+      ]
+    });
+
+
+    initializeTagInput('tagsInput', 'tagsInputContainer', 'eligibleMajors', 'Type a major and press Enter');
+    initializeTagInput('minortagsInput', 'minortagsInputContainer', 'eligibleMinors', 'Type a minor and press Enter');
+
+    // Loop through scholarships
+    const scholarships = [
+      {% for scholarship in scholarships %}
+        {
+      id: {{ scholarship.id }},
+    majors: {{ scholarship.eligible_majors | tojson }},
+    minors: {{ scholarship.eligible_minors | tojson }}
+        }
+    {% if not loop.last %}, {% endif %}
+  {% endfor %}
+    ];
+
+  scholarships.forEach(scholarship => {
+    initializeTagInput(
+      `edittagsInput${scholarship.id}`,
+      `edittagsInputContainer${scholarship.id}`,
+      `editeligibleMajors${scholarship.id}`,
+      'Type a major and press Enter',
+      scholarship.majors // Preloaded majors
+    );
+
+    initializeTagInput(
+      `editminortagsInput${scholarship.id}`,
+      `editminortagsInputContainer${scholarship.id}`,
+      `editeligibleMinors${scholarship.id}`,
+      'Type a minor and press Enter',
+      scholarship.minors // Preloaded minors
+    );
+  });
+
+  });
+
+  function saveValueAndNavigate(value) {
+    localStorage.setItem("inputValue", value);
+    window.location.href = "/donor/applications";
+  }
+
+</script>
+
+{% endblock %}
