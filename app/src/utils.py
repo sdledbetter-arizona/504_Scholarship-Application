@@ -142,23 +142,29 @@ def calculate_matching_score(scholarship_id, application_id):
     scholarship_requirements = {key: value for key, value in scholarship_requirements.items() if value is not None}
     applicant_profile = {key: value for key, value in applicant_profile.items() if value is not None}
 
-    total_requirements = len(scholarship_requirements)
-
+    total_requirements = 0
     matched_requirements = 0
 
     for key, value in scholarship_requirements.items():
-        if key == "gpa" and applicant_profile.get(key, 0) >= value:
-            matched_requirements += 1
-        elif key in ["major", "minor"]:
-            profile_value = applicant_profile.get(key)
+        if value:
+            total_requirements +=1
 
-            if profile_value in value:
+            if key == "gpa" and applicant_profile.get(key, 0) >= value:
                 matched_requirements += 1
 
-        elif key not in ["gpa", "major", "minor"] and applicant_profile.get(key) == value:
-            matched_requirements += 1
+            elif key in ["major", "minor"]:
+                profile_value = applicant_profile.get(key)
+
+                if profile_value in value:
+                    matched_requirements += 1
+
+            elif key not in ["gpa", "major", "minor"] and applicant_profile.get(key) == value:
+                matched_requirements += 1
     
     missed_requirements = total_requirements - matched_requirements
+
+    if total_requirements < 5:
+        missed_requirements += 5 - total_requirements
     
     if missed_requirements == 0:
         return 5
